@@ -1,0 +1,62 @@
+{% load static %}
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <!-- Navbar Brand-->
+    <a class="navbar-brand ps-3" href="/">
+        <img src="{% static 'assets/img/WireGuard-Icon-Logo.wine.svg' %}" alt="Logo" width="30" height="30"
+             class="d-inline-block align-text-top">
+        Opn Wireguard</a>
+    <!-- Sidebar Toggle-->
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse ms-3" id="navbarNavDarkDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    API Client: {% if user.default_api_client %}
+                    {{user.default_api_client.friendly_name}}
+                    {% else %} 'Not set!' {% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    {% for api_client in user.open_sense_api_clients %}
+                    <li>
+                        <a class="dropdown-item {% if api_client.friendly_name == user.default_api_client.friendly_name %} active {% endif %}"
+                           href="/switch-api-client/{{api_client.id}}">
+                            {{api_client.friendly_name}}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Navbar Search-->
+    <form id="search-form" class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+        <div class="input-group">
+            <input id="search-input" name="q" class="form-control" type="text" placeholder="Search for..."
+                   aria-label="Search for..." aria-describedby="btnNavbarSearch"/>
+            <button class="btn btn-primary" id="btnNavbarSearch" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+    </form>
+    <!-- Navbar-->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item pt-2">
+                    <span class="navbar-link">
+                        <i id="system_status" data-toggle="tooltip left" title="Show system status"
+                           style="cursor:pointer" class="fas fa-circle text-muted"></i>
+                    </span>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#!">Settings</a></li>
+                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                <li>
+                    <hr class="dropdown-divider"/>
+                </li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
