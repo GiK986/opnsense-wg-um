@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard - OpnWG {% endblock %}
+
+{% block page_name %} Dashboard {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">Total clients: {{ total_count }} </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="/">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Active clients: {{ total_count }}</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="/active">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body">Inactive more thad 7 days: {{ inactive_more_7days_count }}</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="/inactive-7days">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white mb-4">
+            <div class="card-body">Inactive clients: {{ inactive_count }}</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="/inactive">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Clients Status
+    </div>
+    <div class="card-body">
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Interface</th>
+                    <th>Name</th>
+                    <th>Tunnel address</th>
+                    <th>Last Handshake</th>
+                    <th>Config file</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Interface</th>
+                    <th>Name</th>
+                    <th>Tunnel address</th>
+                    <th>Last Handshake</th>
+                    <th>Config file</th>
+                </tr>
+            </tfoot>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>{{ client.interface }}</td>
+                    <td><a class="nav-link" href="/wg-clients/{{ client.uuid }}"> {{ client.name }} </a></td>
+                    <td>{{ client.tunneladdress }}</td>
+                    <td>{{ client.lastHandshake }}</td>
+                    {% if 'config_url' in client %}
+                    <td><a class="nav-link" href="{{ client.config_url }}"> get file </a></td>
+                    {% else %}
+                    <td>not found file</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
