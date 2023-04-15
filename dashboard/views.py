@@ -1,10 +1,12 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 # Create your views here.
 def dashboard(request):
     context = {
-        "user": {"first_name": "John", "last_name": "Doe"},
+        "user": request.user,
         "total_count": 100,
         "inactive_count": 25,
         "inactive_more_7days_count": 10,
