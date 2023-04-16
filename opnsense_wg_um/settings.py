@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "dashboard.apps.DashboardConfig",
     "users.apps.UsersConfig",
     "opnsense_api_clients.apps.OpnsenseApiClientsConfig",
+    "wg_users.apps.WgUsersConfig",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+AUTHENTICATION_BACKENDS = [
+    'users.backends.CustomAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = "opnsense_wg_um.urls"

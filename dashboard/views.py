@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 # Create your views here.
 def dashboard(request):
     user = request.user
-    user.default_api_client = user.opnsenseapiclient_set.filter(is_default=True).first()
-    user.open_sense_api_clients = user.opnsenseapiclient_set.all()
+    # user.default_api_client = user.opnsenseapiclient_set.filter(is_default=True).first()
+    # user.open_sense_api_clients = user.opnsenseapiclient_set.all()
     context = {
         "user": user,
         "total_count": 100,

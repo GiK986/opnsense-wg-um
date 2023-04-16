@@ -20,7 +20,7 @@
                     {% for api_client in user.open_sense_api_clients %}
                     <li>
                         <a class="dropdown-item {% if api_client.friendly_name == user.default_api_client.friendly_name %} active {% endif %}"
-                           href="/switch-api-client/{{api_client.id}}">
+                           href="{% url 'set_default_api_client' api_client.id %}">
                             {{api_client.friendly_name}}
                         </a>
                     </li>

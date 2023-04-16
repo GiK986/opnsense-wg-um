@@ -43,3 +43,17 @@ def delete(request, pk):
 
     context = {"api_client": api_client}
     return render(request, "opnsense_api_clients/delete.html", context)
+
+
+def set_default(request, pk):
+    current_api_client = request.user.default_api_client
+    set_default_api_client = request.user.opnsenseapiclient_set.get(id=pk)
+
+    if current_api_client and current_api_client != set_default_api_client:
+        current_api_client.is_default = False
+        current_api_client.save()
+
+        set_default_api_client.is_default = True
+        set_default_api_client.save()
+
+    return redirect(request.META['HTTP_REFERER'])
