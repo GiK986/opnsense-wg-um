@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %} OpnSense API clients {% endblock %}
+
+{% block page_name %} OpnSense API clients {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Open Sense API clients</li>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <span class="pt-2"><i class="fas fa-table me-1"></i>
+                OpnSense API clients</span>
+            <a href="{% url 'create_api_client' %}" class="btn btn-primary text-end">Add API client</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Current used</th>
+                    <th>Friendly Name</th>
+                    <th>Base URL</th>
+                    <th>Endpoint IP/Host</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Current used</th>
+                    <th>Friendly Name</th>
+                    <th>Base URL</th>
+                    <th>Endpoint IP / Host</th>
+                    <th>Action</th>
+                </tr>
+            </tfoot>
+            <tbody>
+            {% for api_client in api_clients %}
+                <tr>
+                    <td> {% if api_client.is_default %} Yes {% endif %} </td>
+                    <td><a class="nav-link pt-0 pb-0" href="{% url 'update_api_client' api_client.id %}">{{ api_client.friendly_name }}</a></td>
+                    <td>{{ api_client.base_url }}</td>
+                    <td>{{ api_client.endpoint_url }}</td>
+                    <td>
+                        <a href="{% url 'delete_api_client' api_client.id %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

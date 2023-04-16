@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %} Update API client {% endblock %}
+
+{% block page_name %} Update API client {% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'index_api_clients' %}">OpnSense API clients</a></li>
+<li class="breadcrumb-item active">Update API client</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">OpnSense API client</h3></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-check mb-3">
+                        {{ form.is_default }}
+                        <label class="form-check-label" for="id_is_default">Is default</label>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ form.friendly_name }}
+                                <label>Friendly name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ form.endpoint_url }}
+                                <label>Endpoint IP/Host</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ form.base_url }}
+                                <label>Base url</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.api_key }}
+                        <label>API key</label>
+                    </div>
+                    <div class="form-floating">
+                        {{ form.api_secret }}
+                        <label>API secret</label>
+                    </div>
+
+                    <div class="mt-3 mb-0">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block">Update API Client</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

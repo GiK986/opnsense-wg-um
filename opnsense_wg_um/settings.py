@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     "dashboard.apps.DashboardConfig",
     "users.apps.UsersConfig",
+    "opnsense_api_clients.apps.OpnsenseApiClientsConfig",
 ]
 
 MIDDLEWARE = [
