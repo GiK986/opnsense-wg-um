@@ -19,3 +19,10 @@ class OpnSenseApiClient(models.Model):
 
     def __str__(self):
         return self.friendly_name
+
+    def to_dict(self):
+        return {
+            'api_key': self.api_key,
+            'api_secret': self.api_secret,
+            'base_url': self.base_url,
+        }

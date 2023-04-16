@@ -22,31 +22,31 @@
         <table id="datatablesSimple">
             <thead>
                 <tr>
-                    <th>Interface</th>
+                    <th>Interface Name</th>
                     <th>User Name</th>
                     <th>Tunnel Address</th>
-                    <th>Last Handshake</th>
+                    <th>Keepalive</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
-                    <th>Interface</th>
+                    <th>Interface Name</th>
                     <th>User Name</th>
                     <th>Tunnel Address</th>
-                    <th>Last Handshake</th>
+                    <th>Keepalive</th>
                     <th>Action</th>
                 </tr>
             </tfoot>
             <tbody>
             {% for wg_user in wg_users %}
                 <tr>
-                    <td> {% if api_client.is_default %} Yes {% endif %} </td>
-                    <td><a class="nav-link pt-0 pb-0" href="{% url 'update_api_client' api_client.id %}">{{ api_client.friendly_name }}</a></td>
-                    <td>{{ api_client.base_url }}</td>
-                    <td>{{ api_client.endpoint_url }}</td>
+                    <td> {{ wg_user.interface_name }} </td>
+                    <td><a class="nav-link pt-0 pb-0" href="{{ wg_user.uuid }}">{{ wg_user.name }}</a></td>
+                    <td>{{ wg_user.tunneladdress }}</td>
+                    <td>{{ wg_user.keepalive }}</td>
                     <td>
-                        <a href="{% url 'delete_api_client' api_client.id %}" class="btn btn-danger">Delete</a>
+                        <a href="{{ wg_user.uuid }}" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>
             {% endfor %}
