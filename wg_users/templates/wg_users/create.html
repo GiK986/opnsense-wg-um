@@ -36,15 +36,21 @@
                                     <option value="{{ allowed_ips_group.id }}">{{ allowed_ips_group.group_name }}</option>
                                   {% endfor %}
                               </select>
-                              <label for="allowed_ips_group">Allowed IPs groups</label>
+                              <label for="allowed_ips_group">Allowed IPs group</label>
                             </div>
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-9">
+                        <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input class="form-control" id="prefixUsers" type="text" name="prefix_users" placeholder="Enter wg users prefix" />
-                                <label for="prefixUsers">Prefix users</label>
+                                <input class="form-control" id="prefix_users" type="text" name="prefix_users" placeholder="Enter wg users prefix" />
+                                <label for="prefix_users">Prefix users</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="keepalive" type="number" name="keepalive" placeholder="Enter count users" value="15" />
+                                <label for="client_count">Keepalive</label>
                             </div>
                         </div>
                         <div class="col-md-3">

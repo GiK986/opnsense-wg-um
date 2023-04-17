@@ -53,13 +53,13 @@ class Keypair(NamedTuple):
 def genkey(*, _wg: Iterable[str] = WG) -> str:
     """Generates a new private key."""
 
-    return check_output([*_wg, 'genkey'], text=True, shell=True).strip()
+    return check_output([*_wg, 'genkey'], text=True).strip()
 
 
 def pubkey(key: str, *, _wg: Iterable[str] = WG) -> str:
     """Generates a public key for the given private key."""
 
-    return check_output([*_wg, 'pubkey'], input=key, text=True, shell=True).strip()
+    return check_output([*_wg, 'pubkey'], input=key, text=True).strip()
 
 
 def keypair(*, _wg: Iterable[str] = WG) -> Keypair:

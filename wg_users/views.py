@@ -4,7 +4,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from utils.api_client import ApiClient
 from utils.pywgtools import wg_allowed_ips
+from utils.pywgtools.wgtools import genkey, pubkey
 from .forms import AllowedIpsGroupForm
+from .models import WireguardConfig
+from django.contrib import messages
 
 
 # Create your views here.
@@ -23,6 +26,51 @@ def create(request):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     interfaces = api_client.get_interfaces()
     allowed_ips_groups = request.user.allowedipsgroup_set.all().values('id', 'group_name')
+
+    if request.method == "POST":
+        interface = request.POST.get('interface')
+        allowed_ips_group = request.POST.get('allowed_ips_group')
+        prefix_users = request.POST.get('prefix_users')
+        keepalive = int(request.POST.get('keepalive'))
+        client_count = int(request.POST.get('client_count'))
+        server_endpoint = request.user.default_api_client.endpoint_url
+        allowed_ips = request.user.allowedipsgroup_set.get(id=allowed_ips_group).allowed_ips_calculated
+
+        server_config = api_client.get_server_config(interface)
+        hosts_iterator = api_client.get_hosts_iterator(interface)
+
+        added_clients = []
+        for _ in range(client_count):
+
+            private_key = genkey()
+            public_key = pubkey(private_key)
+            available_host = str(next(hosts_iterator))
+            name = f'{prefix_users}_{available_host.split(".")[-1]}'
+
+            wg_user_uuid = api_client.add_client(name, public_key, available_host)
+            added_clients.append(wg_user_uuid)
+
+            wireguard_config = WireguardConfig(
+                wg_user_uuid=wg_user_uuid,
+                name=name,
+                address=available_host,
+                private_key=private_key,
+                public_key=public_key,
+                server_public_key=server_config['pubkey'],
+                server_endpoint=server_endpoint,
+                server_endpoint_port=server_config['port'],
+                server_allowed_ips=allowed_ips,
+                persistent_keepalive=keepalive,
+                dns=server_config['dns'],
+            )
+
+            wireguard_config.save()
+
+        api_client.update_server_config(interface, added_clients)
+
+        messages.success(request, f'Added {client_count} clients to {server_config["name"]} interface')
+        return redirect("index_wg_users")
+
     context = {
         'interfaces': interfaces,
         'allowed_ips_groups': allowed_ips_groups,

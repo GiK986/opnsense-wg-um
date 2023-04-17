@@ -1,5 +1,6 @@
-from utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient
+from utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient, ServiceClient
 from datetime import datetime, timedelta
+from ipaddress import ip_interface
 
 
 class ApiClient:
@@ -7,6 +8,7 @@ class ApiClient:
         self.endpoint_client = EndpointClient(api_key, api_secret, base_url)
         self.general_client = GeneralClient(api_key, api_secret, base_url)
         self.server_client = ServerClient(api_key, api_secret, base_url)
+        self.service_client = ServiceClient(api_key, api_secret, base_url)
 
     def get_all_clients(self):
         return self.endpoint_client.get_all()
@@ -20,8 +22,19 @@ class ApiClient:
     def get_status(self):
         return self.general_client.get_status()['items']
 
-    def add_client(self, body):
-        return self.endpoint_client.add_client(body)
+    def add_client(self, name, public_key, host_ip):
+        payload = {
+            "client": {
+                "enabled": "1",
+                "name": name,
+                "pubkey": public_key,
+                "tunneladdress": host_ip + '/32',
+                "keepalive": 15
+            }
+        }
+        response = self.endpoint_client.add_client(payload)
+
+        return response['uuid']
 
     def del_client(self, uuid):
         return self.endpoint_client.del_client(uuid)
@@ -114,3 +127,49 @@ class ApiClient:
         interfaces = list(map(lambda x: {'name': x['name'], 'uuid': x['uuid']}, servers['rows']))
 
         return interfaces
+
+    def get_server_config(self, uuid):
+        server = self.server_client.get_server(uuid)
+        server['server']['tunneladdress'] = list(server['server']['tunneladdress'].keys())[0]
+        server_config = {key: value for key, value in server['server'].items()
+                         if key in ['pubkey', 'port', 'name', 'tunneladdress']}
+
+        server_config['dns'] = ', '.join(list(server['server']['dns']))
+
+        return server_config
+
+    def get_hosts_iterator(self, uuid):
+        server_address = self.get_server_config(uuid)['tunneladdress']
+        reserved_ips = self.get_all_reserved_ips()
+        net_interface = ip_interface(server_address)
+        reserved_ips.add(str(net_interface.ip))
+        network = net_interface.network
+        hosts_iterator = (host for host in network.hosts() if str(host) not in reserved_ips)
+        return hosts_iterator
+
+    def update_server_config(self, uuid, added_clients):
+        wireguard_instance_info = self.server_client.get_server(uuid)
+        server_peers = wireguard_instance_info['server']['peers']
+        del wireguard_instance_info['server']['instance']
+
+        # find new peer if not selected
+        for peerUUID in server_peers:
+            if wireguard_instance_info['server']['peers'][peerUUID]['selected'] == 1:
+                added_clients.append(peerUUID)
+
+        if wireguard_instance_info['server']['dns']:
+            wireguard_instance_info['server']['dns'] = list(wireguard_instance_info['server']['dns'].keys())[0]
+        else:
+            wireguard_instance_info['server']['dns'] = ''
+
+        if wireguard_instance_info['server']['tunneladdress']:
+            wireguard_instance_info['server']['tunneladdress'] = \
+                list(wireguard_instance_info['server']['tunneladdress'].keys())[0]
+
+        wireguard_instance_info['server']['peers'] = ','.join(added_clients)
+
+        response = self.server_client.set_server(uuid, wireguard_instance_info)
+
+        if response['result'] == 'saved':
+            self.service_client.reconfigure()
+
