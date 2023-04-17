@@ -12,7 +12,7 @@
 <div class="row">
     <div class="col-xl-3 col-md-6">
         <div class="card bg-primary text-white mb-4">
-            <div class="card-body">Total clients: {{ total_count }} </div>
+            <div class="card-body">Total clients: {{ status_count.total }} </div>
             <div class="card-footer d-flex align-items-center justify-content-between">
                 <a class="small text-white stretched-link" href="/">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -21,7 +21,7 @@
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-success text-white mb-4">
-            <div class="card-body">Active clients: {{ total_count }}</div>
+            <div class="card-body">Active clients: {{ status_count.active }}</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
                 <a class="small text-white stretched-link" href="/active">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -30,16 +30,16 @@
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-warning text-white mb-4">
-            <div class="card-body">Inactive more thad 7 days: {{ inactive_more_7days_count }}</div>
+            <div class="card-body">Inactive more thad 3 days: {{ status_count.inactive_more_3days }}</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/inactive-7days">View Details</a>
+                <a class="small text-white stretched-link" href="/inactive_more_3days">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-danger text-white mb-4">
-            <div class="card-body">Inactive clients: {{ inactive_count }}</div>
+            <div class="card-body">Inactive clients: {{ status_count.inactive }}</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
                 <a class="small text-white stretched-link" href="/inactive">View Details</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -76,10 +76,10 @@
             <tbody>
                 {% for client in clients %}
                 <tr>
-                    <td>{{ client.interface }}</td>
+                    <td>{{ client.interface_name }}</td>
                     <td><a class="nav-link" href="/wg-clients/{{ client.uuid }}"> {{ client.name }} </a></td>
                     <td>{{ client.tunneladdress }}</td>
-                    <td>{{ client.lastHandshake }}</td>
+                    <td>{{ client.lastHandshake | date:"d.m.y H:i" }}</td>
                     {% if 'config_url' in client %}
                     <td><a class="nav-link" href="{{ client.config_url }}"> get file </a></td>
                     {% else %}

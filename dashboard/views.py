@@ -1,27 +1,14 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from utils.api_client import ApiClient
 
 
 # Create your views here.
-def dashboard(request):
-    user = request.user
-    # user.default_api_client = user.opnsenseapiclient_set.filter(is_default=True).first()
-    # user.open_sense_api_clients = user.opnsenseapiclient_set.all()
+def dashboard(request, filter_key=None):
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    clients = api_client.get_client_stats_by_filter(filter_key)
+    status_count = api_client.get_client_stats_count()
     context = {
-        "user": user,
-        "total_count": 100,
-        "inactive_count": 25,
-        "inactive_more_7days_count": 10,
-        "clients": [
-            {
-                "interface": "wg0",
-                "name": "John Doe",
-                "uuid": "1234567890",
-                "tunneladdress": "192.168.0.12",
-                "lastHandshake": "2021-10-01 12:00:00",
-                "config_url": "wg0.conf",
-            }
-        ],
+        "status_count": status_count,
+        "clients": clients,
     }
     return render(request, "dashboard/dashboard.html", context)
