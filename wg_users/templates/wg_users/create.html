@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %} Add WireGuard Users {% endblock %}
+
+{% block page_name %} Add WireGuard Users {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'index_wg_users' %}">WireGuard Users</a></li>
+    <li class="breadcrumb-item active">Add WireGuard Users</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">Add WireGuard Users</h3></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select form-select-sm" name="interface">
+                                    {% for interface in interfaces %}
+                                        <option value="{{ interface.uuid }}">{{ interface.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                    <label for="client_count">Interface</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                              <select class="form-select" id="allowed_ips_group" name="allowed_ips_group" aria-label="Floating label select example">
+                                  {% for allowed_ips_group in user.allowed_ips_groups %}
+                                    <option value="{{ allowed_ips_group.id }}">{{ allowed_ips_group.group_name }}</option>
+                                  {% endfor %}
+                              </select>
+                              <label for="allowed_ips_group">Allowed IPs groups</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-9">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="prefixUsers" type="text" name="prefix_users" placeholder="Enter wg users prefix" />
+                                <label for="prefixUsers">Prefix users</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="client_count" type="number" name="client_count" placeholder="Enter count users" value="1" />
+                                <label for="client_count">Client count</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 mb-0">
+                        <div class="d-grid"><button type="submit" class="btn btn-primary btn-block" >Add Clients</button></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-from utils.pyopnsense.wireguard import EndpointClient, GeneralClient
+from utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient
 from datetime import datetime, timedelta
 
 
@@ -6,6 +6,7 @@ class ApiClient:
     def __init__(self, api_key, api_secret, base_url):
         self.endpoint_client = EndpointClient(api_key, api_secret, base_url)
         self.general_client = GeneralClient(api_key, api_secret, base_url)
+        self.server_client = ServerClient(api_key, api_secret, base_url)
 
     def get_all_clients(self):
         return self.endpoint_client.get_all()
@@ -107,3 +108,9 @@ class ApiClient:
             return [client for client in all_clients if filters[filter_key](client)]
         else:
             return all_clients
+
+    def get_interfaces(self):
+        servers = self.server_client.search_server()
+        interfaces = list(map(lambda x: {'name': x['name'], 'uuid': x['uuid']}, servers['rows']))
+
+        return interfaces

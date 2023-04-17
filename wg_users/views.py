@@ -12,3 +12,13 @@ def index(request):
     }
 
     return render(request, "wg_users/index.html", context)
+
+
+def create(request):
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    interfaces = api_client.get_interfaces()
+    context = {
+        'interfaces': interfaces,
+        'allowed_ips_groups': [],
+    }
+    return render(request, "wg_users/create.html", context)
