@@ -136,15 +136,15 @@ if (confirmReconfigurationBtn) {
 
 
 function calculate_allowed_ips(event) {
-    const allowed_ips = document.getElementById('allowed_ips').value;
-    const disallowed_ips = document.getElementById('disallowed_ips').value;
+    const allowed_ips = document.getElementById('id_allowed_ips').value;
+    const disallowed_ips = document.getElementById('id_disallowed_ips').value;
     const button = document.querySelector("button.btn.btn-primary.btn-block");
-    const allowed_ips_calculated = document.getElementById('allowed_ips_calculated')
+    const allowed_ips_calculated = document.getElementById('id_allowed_ips_calculated')
     button.disabled = true;
 
     allowed_ips_calculated.value = '';
 
-    fetch('/calculate-allowed-ips', { method: 'POST',
+    fetch('/wg_users/calculate_allowed_ips/', { method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({allowed_ips: allowed_ips, disallowed_ips: disallowed_ips}) })
       .then(response => response.json())

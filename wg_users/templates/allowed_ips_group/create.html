@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %} {{ button_text }} AllowedIPs Group {% endblock %}
+
+{% block page_name %} {{ button_text }} AllowedIPs Group {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'index_allowed_ips_group' %}">AllowedIPs Groups</a></li>
+    <li class="breadcrumb-item active">{{ button_text }} Group</li>
+{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">{{ button_text }} AllowedIPs Group</h3></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3 mb-md-0">
+                                {{ form.group_name }}
+                                <label for="group_name">Group name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-floating">
+                                {{ form.allowed_ips }}
+                                <label for="allowed_ips">Allowed IPs</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        {{ form.disallowed_ips }}
+                        <label for="disallowed_ips">Disallowed IPs</label>
+                    </div>
+                    <div class="form-floating">
+                        {{ form.allowed_ips_calculated }}
+                        <label for="allowed_ips_calculated">Allowed IPs calculated</label>
+                    </div>
+                    <div class="mt-4 mb-0">
+                        <div class="d-grid"><button type="submit" class="btn btn-primary btn-block">{{ button_text }} Group</button></div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="card-footer text-center py-3">
+              <button type="button" class="btn btn-outline-primary" onclick="calculate_allowed_ips(event)" > Calculate </button>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

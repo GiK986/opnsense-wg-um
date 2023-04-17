@@ -32,7 +32,7 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                               <select class="form-select" id="allowed_ips_group" name="allowed_ips_group" aria-label="Floating label select example">
-                                  {% for allowed_ips_group in user.allowed_ips_groups %}
+                                  {% for allowed_ips_group in allowed_ips_groups %}
                                     <option value="{{ allowed_ips_group.id }}">{{ allowed_ips_group.group_name }}</option>
                                   {% endfor %}
                               </select>

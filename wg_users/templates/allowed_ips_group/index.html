@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %} AllowedIPs Groups {% endblock %}
+
+{% block page_name %} AllowedIPs Groups {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active">AllowedIPs Groups</li>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <span class="pt-2"><i class="fas fa-table me-1"></i>
+                AllowedIPs groups for a WireGuard peer</span>
+            <a href="{% url 'create_allowed_ips_group' %}" class="btn btn-primary text-end">Add group</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Group name</th>
+                    <th>Allowed IPs</th>
+                    <th>Disallowed IPs</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Group name</th>
+                    <th>Allowed IPs</th>
+                    <th>Disallowed IPs</th>
+                    <th>Action</th>
+                </tr>
+            </tfoot>
+            <tbody>
+            {% for allowed_ips in allowed_ips_groups %}
+                <tr>
+                    <td><a class="nav-link" href="{% url 'update_allowed_ips_group' allowed_ips.id %}">{{ allowed_ips.group_name }}</a></td>
+                    <td>{{ allowed_ips.allowed_ips }}</td>
+                    <td>{{ allowed_ips.disallowed_ips }}</td>
+                    <td>
+                        <a href="{% url 'delete_allowed_ips_group' allowed_ips.id %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
