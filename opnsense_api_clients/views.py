@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from .forms import OpnSenseApiClientForm
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 # Create your views here.
 def index(request):
     context = {
@@ -10,6 +12,7 @@ def index(request):
     return render(request, "opnsense_api_clients/index.html", context)
 
 
+@login_required
 def create(request):
     form = OpnSenseApiClientForm(request.user)
     context = {"form": form}
@@ -22,6 +25,7 @@ def create(request):
     return render(request, "opnsense_api_clients/create.html", context)
 
 
+@login_required
 def update(request, pk):
     api_client = request.user.opnsenseapiclient_set.get(id=pk)
     form = OpnSenseApiClientForm(request.user, instance=api_client)
@@ -35,6 +39,7 @@ def update(request, pk):
     return render(request, "opnsense_api_clients/update.html", context)
 
 
+@login_required
 def delete(request, pk):
     api_client = request.user.opnsenseapiclient_set.get(id=pk)
     if request.method == "POST":
@@ -45,6 +50,7 @@ def delete(request, pk):
     return render(request, "opnsense_api_clients/delete.html", context)
 
 
+@login_required
 def set_default(request, pk):
     current_api_client = request.user.default_api_client
     set_default_api_client = request.user.opnsenseapiclient_set.get(id=pk)

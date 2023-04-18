@@ -59,6 +59,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+LOGIN_URL = '/login'
+
 ROOT_URLCONF = "opnsense_wg_um.urls"
 
 TEMPLATES = [

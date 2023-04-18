@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from utils.api_client import ApiClient
@@ -13,6 +14,7 @@ from .models import WireguardConfig
 from django.contrib import messages
 
 
+@login_required
 # Create your views here.
 def index(request):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
@@ -25,6 +27,7 @@ def index(request):
     return render(request, "wg_users/index.html", context)
 
 
+@login_required
 def create(request):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     interfaces = api_client.get_interfaces()
@@ -92,6 +95,7 @@ def download(request, wg_user_uuid):
     return response
 
 
+@login_required
 def update(request, wg_user_uuid):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     wg_user = api_client.get_client(wg_user_uuid)
@@ -120,6 +124,7 @@ def update(request, wg_user_uuid):
 
 
 @csrf_exempt
+@login_required
 @require_http_methods(["DELETE"])
 def delete(request, wg_user_uuid):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
@@ -134,6 +139,7 @@ def delete(request, wg_user_uuid):
 
 
 # AllowedIpsGroup
+@login_required
 def allowed_ips_group_index(request):
     context = {
         'allowed_ips_groups': request.user.allowedipsgroup_set.all(),
@@ -141,6 +147,7 @@ def allowed_ips_group_index(request):
     return render(request, "allowed_ips_group/index.html", context)
 
 
+@login_required
 def allowed_ips_group_create(request):
     form = AllowedIpsGroupForm(request.user)
     context = {"form": form, "button_text": "Create"}
@@ -153,6 +160,7 @@ def allowed_ips_group_create(request):
     return render(request, "allowed_ips_group/create.html", context)
 
 
+@login_required
 def allowed_ips_group_update(request, allowed_ips_group_id):
     allowed_ips_group = request.user.allowedipsgroup_set.get(id=allowed_ips_group_id)
     form = AllowedIpsGroupForm(request.user, instance=allowed_ips_group)
@@ -166,6 +174,7 @@ def allowed_ips_group_update(request, allowed_ips_group_id):
     return render(request, "allowed_ips_group/create.html", context)
 
 
+@login_required
 def allowed_ips_group_delete(request, allowed_ips_group_id):
     allowed_ips_group = request.user.allowedipsgroup_set.get(id=allowed_ips_group_id)
     if request.method == "POST":
@@ -177,6 +186,7 @@ def allowed_ips_group_delete(request, allowed_ips_group_id):
 
 
 @csrf_exempt
+@login_required
 @require_http_methods(["POST"])
 def calculate_allowed_ips(request):
     allowed_ips_calculated = None
