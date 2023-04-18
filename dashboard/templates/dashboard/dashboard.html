@@ -77,7 +77,7 @@
                 {% for client in clients %}
                 <tr>
                     <td>{{ client.interface_name }}</td>
-                    <td><a class="nav-link" href="/wg-clients/{{ client.uuid }}"> {{ client.name }} </a></td>
+                    <td><a class="nav-link" href="{% url 'update_wg_users' client.uuid %}"> {{ client.name }} </a></td>
                     <td>{{ client.tunneladdress }}</td>
                     <td>{{ client.lastHandshake | date:"d.m.y H:i" }}</td>
                     {% if 'config_url' in client %}

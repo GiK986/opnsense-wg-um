@@ -89,37 +89,28 @@ window.addEventListener("click", (event) => {
   }
 });
 
-const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-if (confirmDeleteBtn) {
-    confirmDeleteBtn.onclick = (event) => {
-          url = event.currentTarget.baseURI;
-          fetch(url, { method: "DELETE" })
-            .then((response) => response.json())
-            .then((data) => {
-              // Handle the response from the server
-              // ...
-              if (data) {
-                window.location.replace("/");
-              }
-
-            });
-          $("#confirmDeleteModal").modal("hide");
-        };
+function deleteWgUser(uuid, event) {
+    // Send a DELETE request to the /wg_users/<uuid> endpoint
+    fetch(`/wg_users/delete/${uuid}/`, { method: 'DELETE' })
+      .then(response => response.json())
+      .then(data => {
+        // Refresh the page
+        window.location.replace(document.referrer);
+    });
+    $("#confirmDeleteModal").modal("hide");
 }
 
 const confirmReconfigurationBtn = document.getElementById("confirmReconfigurationBtn");
 if (confirmReconfigurationBtn) {
     confirmReconfigurationBtn.onclick = (event) => {
-          url = event.currentTarget.baseURI + '/reconfiguration';
+          url = event.currentTarget.baseURI + 'reconfiguration/';
           const interface_uuid = document.querySelector('#interface').value
-          const add_qr_code = Boolean(document.querySelector('#add_qr_code').value)
-          const allowed_ips_group = Number(document.querySelector('#allowed_ips_group').value)
+          const allowed_ips_group = document.querySelector('#allowed_ips_group').value
 
           fetch(url, { method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({interface_uuid: interface_uuid,
-                                            allowed_ips_group: allowed_ips_group,
-                                            add_qr_code: add_qr_code
+                                            allowed_ips_group: allowed_ips_group
                                             }) })
             .then((response) => response.json())
             .then((data) => {

@@ -42,11 +42,11 @@
             {% for wg_user in wg_users %}
                 <tr>
                     <td> {{ wg_user.interface_name }} </td>
-                    <td><a class="nav-link pt-0 pb-0" href="{{ wg_user.uuid }}">{{ wg_user.name }}</a></td>
+                    <td><a class="nav-link pt-0 pb-0" href="{% url 'update_wg_users' wg_user.uuid %}">{{ wg_user.name }}</a></td>
                     <td>{{ wg_user.tunneladdress }}</td>
                     <td>{{ wg_user.keepalive }}</td>
                     <td>
-                        <a href="{{ wg_user.uuid }}" class="btn btn-danger">Delete</a>
+                        <a href="{% url 'download_wg_users' wg_user.uuid %}" class="btn btn-outline-primary">download</a>
                     </td>
                 </tr>
             {% endfor %}

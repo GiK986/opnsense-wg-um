@@ -2,6 +2,9 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 from utils.api_client import ApiClient
 from utils.pywgtools import wg_allowed_ips
 from utils.pywgtools.wgtools import genkey, pubkey
@@ -78,6 +81,58 @@ def create(request):
     return render(request, "wg_users/create.html", context)
 
 
+def download(request, wg_user_uuid):
+    wireguard_config = WireguardConfig.objects.get(wg_user_uuid=wg_user_uuid)
+    context = {
+        'config': wireguard_config,
+    }
+    content = render_to_string('wg_users/wireguard-config.conf', context)
+    response = HttpResponse(content, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{wireguard_config.name}.conf"'
+    return response
+
+
+def update(request, wg_user_uuid):
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    wg_user = api_client.get_client(wg_user_uuid)
+    wg_user['uuid'] = wg_user_uuid
+    interfaces = api_client.get_interfaces()
+    allowed_ips_groups = request.user.allowedipsgroup_set.all().values('id', 'group_name')
+
+    if request.method == "POST":
+        wg_user.update(request.POST.dict())
+        del wg_user['uuid'], wg_user['csrfmiddlewaretoken']
+        api_client.set_client(wg_user_uuid, wg_user)
+
+        wireguard_config = WireguardConfig.objects.get(wg_user_uuid=wg_user_uuid)
+        if wireguard_config:
+            wireguard_config.name = wg_user['name']
+            wireguard_config.keepalive = wg_user['keepalive']
+            wireguard_config.save()
+        messages.success(request, f'Updated client {wg_user["name"]}')
+        return redirect("index_wg_users")
+    context = {
+        'wg_user': wg_user,
+        'interfaces': interfaces,
+        'allowed_ips_groups': allowed_ips_groups,
+    }
+    return render(request, "wg_users/update.html", context)
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def delete(request, wg_user_uuid):
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    api_client.delete_client(wg_user_uuid)
+    wireguard_config = WireguardConfig.objects.get(wg_user_uuid=wg_user_uuid)
+    wg_user_name = None
+    if wireguard_config:
+        wg_user_name = wireguard_config.name
+        wireguard_config.delete()
+    messages.success(request, f'Deleted client {wg_user_name}')
+    return JsonResponse({"status": "ok"})
+
+
 # AllowedIpsGroup
 def allowed_ips_group_index(request):
     context = {
@@ -122,6 +177,7 @@ def allowed_ips_group_delete(request, allowed_ips_group_id):
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def calculate_allowed_ips(request):
     allowed_ips_calculated = None
     if request.method == 'POST':

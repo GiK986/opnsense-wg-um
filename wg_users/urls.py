@@ -5,6 +5,9 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index_wg_users"),
     path("create/", views.create, name="create_wg_users"),
+    path("update/<str:wg_user_uuid>/", views.update, name="update_wg_users"),
+    path("delete/<str:wg_user_uuid>/", views.delete, name="delete_wg_users"),
+    path("download/<str:wg_user_uuid>/", views.download, name="download_wg_users"),
 
     # AllowedIpsGroup
     path("allowed_ips_group/", views.allowed_ips_group_index, name="index_allowed_ips_group"),

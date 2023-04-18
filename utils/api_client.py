@@ -1,3 +1,5 @@
+import json
+
 from utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient, ServiceClient
 from datetime import datetime, timedelta
 from ipaddress import ip_interface
@@ -36,10 +38,13 @@ class ApiClient:
 
         return response['uuid']
 
-    def del_client(self, uuid):
+    def delete_client(self, uuid):
         return self.endpoint_client.del_client(uuid)
 
-    def set_client(self, uuid, peer_client):
+    def set_client(self, uuid, peer_client_dict):
+        peer_client = {
+            "client": peer_client_dict
+        }
         return self.endpoint_client.set_client(uuid, peer_client)
 
     def get_general(self):
@@ -172,4 +177,3 @@ class ApiClient:
 
         if response['result'] == 'saved':
             self.service_client.reconfigure()
-
