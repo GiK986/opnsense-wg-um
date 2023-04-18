@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from utils.api_client import ApiClient
 from django.contrib.auth.decorators import login_required
+from utils.decorators import api_client_required
 
 
 # Create your views here.
+@api_client_required
 @login_required
 def dashboard(request, filter_key=None):
     api_client = ApiClient(**request.user.default_api_client.to_dict())

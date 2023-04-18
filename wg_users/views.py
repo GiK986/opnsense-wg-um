@@ -12,8 +12,10 @@ from utils.pywgtools.wgtools import genkey, pubkey
 from .forms import AllowedIpsGroupForm
 from .models import WireguardConfig
 from django.contrib import messages
+from utils.decorators import api_client_required
 
 
+@api_client_required
 @login_required
 # Create your views here.
 def index(request):
@@ -27,6 +29,7 @@ def index(request):
     return render(request, "wg_users/index.html", context)
 
 
+@api_client_required
 @login_required
 def create(request):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
@@ -95,6 +98,7 @@ def download(request, wg_user_uuid):
     return response
 
 
+@api_client_required
 @login_required
 def update(request, wg_user_uuid):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
@@ -124,6 +128,7 @@ def update(request, wg_user_uuid):
 
 
 @csrf_exempt
+@api_client_required
 @login_required
 @require_http_methods(["DELETE"])
 def delete(request, wg_user_uuid):
