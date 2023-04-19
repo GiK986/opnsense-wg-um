@@ -1,9 +1,10 @@
 /README.md
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
+/__pycache__/
 *.py[cod]
 *$py.class
+/*/*/__pycache__/
 
 # Django stuff:
 *.log
@@ -14,7 +15,7 @@ db.sqlite3-journal
 # Environments
 .env
 .venv
-env/
+/env/
 venv/
 ENV/
 env.bak/
@@ -25,4 +26,6 @@ venv.bak/
 
 # mac os
 .DS_Store
-.idea/.dockerignore
+.DS_Store/
+.idea/
+/secret_key.txt

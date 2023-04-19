@@ -131,3 +131,6 @@ dmypy.json
 # mac os
 .DS_Store
 .idea
+
+# Django secret key
+/secret_key.txt
