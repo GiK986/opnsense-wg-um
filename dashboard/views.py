@@ -5,8 +5,8 @@ from utils.decorators import api_client_required
 
 
 # Create your views here.
-@api_client_required
 @login_required
+@api_client_required
 def dashboard(request, filter_key=None):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     clients = api_client.get_client_stats_by_filter(filter_key)
