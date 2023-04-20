@@ -134,3 +134,6 @@ dmypy.json
 
 # Django secret key
 /secret_key.txt
+
+# Dockerfile run configurations
+/.run

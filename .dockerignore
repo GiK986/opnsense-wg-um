@@ -29,3 +29,6 @@ venv.bak/
 .DS_Store/
 .idea/
 /secret_key.txt
+
+# Dockerfile run configurations
+/.run/
