@@ -39,6 +39,17 @@ Finally, run the development server using:
 
 You can then access the application by navigating to `http://localhost:8000` in your web browser.
 
+
+## Docker Image Build  
+
+### Build for ARM64 
+
+> docker build --platform=linux/arm64 -t gik986/opnsense-wg-um:latest-arm64 .
+
+### Build for AMD64
+
+> docker build --platform=linux/amd64 -t gik986/opnsense-wg-um:latest-amd64 .
+
 ## Contributing
 
 If you would like to contribute to this project, please follow the guidelines in CONTRIBUTING.md.
