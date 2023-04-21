@@ -183,6 +183,6 @@ class ApiClient:
     def test_connection(self):
         try:
             self.service_client.status()
-            return True, None
+            return True, "Test connection successful!"
         except Exception as ex:
             return False, str(ex)

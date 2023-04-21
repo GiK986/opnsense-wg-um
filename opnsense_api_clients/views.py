@@ -83,6 +83,6 @@ def test_connection(request):
         api_client = ApiClient(base_url=base_url, api_key=api_key, api_secret=api_secret)
         result = api_client.test_connection()
         if result[0]:
-            return JsonResponse({'status': 'success'})
+            return JsonResponse({'status': 'success', 'message': result[1]})
 
         return JsonResponse({'status': 'error', 'message': result[1]})

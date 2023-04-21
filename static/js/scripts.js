@@ -149,6 +149,8 @@ function test_connection(event) {
     event.preventDefault();
 
     const alert = document.querySelector("#message");
+    alert.classList.add("alert-danger");
+    alert.classList.remove("alert-success");
     alert.innerHTML = '';
 
     const card_footer = document.querySelector(".card-footer");
@@ -187,6 +189,11 @@ function test_connection(event) {
         if (data.status == 'success') {
             add_api_client.className = "btn btn-outline-success"
             add_api_client.disabled = false;
+
+            alert.classList.remove("alert-danger");
+            alert.classList.add("alert-success");
+            alert.innerHTML = data.message;
+            card_footer.classList.remove("d-none");
         }
         else {
             add_api_client.className = "btn btn-outline-danger"
@@ -199,24 +206,44 @@ function test_connection(event) {
 }
 
 function parseIniFile(event) {
-  event.preventDefault();
+    event.preventDefault();
+    const alert = document.querySelector("#message");
+    alert.innerHTML = '';
 
-  const fileInput = document.getElementById('fileInput');
-  const file = fileInput.files[0];
-  const reader = new FileReader();
+    const card_footer = document.querySelector(".card-footer");
+    card_footer.classList.add("d-none");
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    const reader = new FileReader();
 
-  reader.onload = function(e) {
-    const contents = e.target.result;
-    let lines = contents.split('\n');
-    for (var i = 0; i < lines.length; i++) {
-      let parts = lines[i].split('=');
-      if (parts[0] == 'key') {
-        document.getElementById('id_api_key').value = parts[1];
-      } else if (parts[0] == 'secret') {
-        document.getElementById('id_api_secret').value = parts[1];
+    reader.onload = function(e) {
+      const contents = e.target.result;
+      let lines = contents.split('\n');
+      let isAddedKey = false;
+      let isAddedSecret = false;
+      for (var i = 0; i < lines.length; i++) {
+        let parts = lines[i].split('=');
+        if (parts[0] == 'key') {
+          document.getElementById('id_api_key').value = parts[1];
+          isAddedKey = true;
+        } else if (parts[0] == 'secret') {
+          document.getElementById('id_api_secret').value = parts[1];
+          isAddedSecret = true;
+        }
       }
-    }
-  };
+
+      if (isAddedKey && isAddedSecret) {
+        alert.innerHTML = 'The file was successfully parsed. Please click on the "Test Connection" button to verify the connection.';
+        alert.classList.remove("alert-danger");
+        alert.classList.add("alert-success");
+        card_footer.classList.remove("d-none");
+        fileInput.value = '';
+      } else {
+        alert.innerHTML = 'The file is not a valid OPNsense API client configuration file.';
+        card_footer.classList.remove("d-none");
+      }
+
+    };
 
   reader.readAsText(file);
 }
