@@ -177,3 +177,12 @@ class ApiClient:
 
         if response['result'] == 'saved':
             self.service_client.reconfigure()
+
+        return response
+
+    def test_connection(self):
+        try:
+            self.service_client.status()
+            return True, None
+        except Exception as ex:
+            return False, str(ex)

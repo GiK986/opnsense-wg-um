@@ -52,12 +52,25 @@
                         <label>API secret</label>
                     </div>
 
+                    <div class="input-group mt-3">
+                        <input id="fileInput" name="fileInput" type="file" class="form-control" placeholder="Upload file..." aria-label="Upload file..." aria-describedby="btnFileInput"/>
+                        <button class="btn btn-primary" id="btnFileInput" onclick="parseIniFile(event)" ><i class="fas fa-upload"></i></button>
+                    </div>
+
                     <div class="mt-3 mb-0">
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-block">Add API Client</button>
+                        <div class="d-flex justify-content-between">
+                            <button id="btn-test-connection" onclick="test_connection(event)" class="btn btn-outline-warning">Test Connection</button>
+                            <button type="submit" id="add-api-client" class="btn btn-outline-primary btn-block" disabled >Add API Client</button>
                         </div>
                     </div>
+
                 </form>
+
+            </div>
+            <div class="card-footer text-center py-3 d-none">
+                <div id="message" class="alert alert-danger" role="alert">
+                  This is a danger alert—check it out!
+                </div>
             </div>
         </div>
     </div>

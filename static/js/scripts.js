@@ -143,5 +143,80 @@ function calculate_allowed_ips(event) {
         allowed_ips_calculated.value = data.allowed_ips_calculated
         button.disabled = false;
     });
+}
 
+function test_connection(event) {
+    event.preventDefault();
+
+    const alert = document.querySelector("#message");
+    alert.innerHTML = '';
+
+    const card_footer = document.querySelector(".card-footer");
+    card_footer.classList.add("d-none");
+
+    const add_api_client = document.querySelector("#add-api-client");
+    add_api_client.className = "btn btn-outline-primary"
+    add_api_client.disabled = true;
+
+    const btn_test_connection = document.querySelector("#btn-test-connection");
+    btn_test_connection.innerHTML = 'Test Connection <i class="fa-solid fa-spinner fa-spin"></i>'
+
+    const url = event.currentTarget.baseURI + '/test_connection/';
+    const base_url = document.querySelector('#id_base_url').value;
+    const api_key = document.querySelector('#id_api_key').value;
+    const api_secret = document.querySelector('#id_api_secret').value;
+
+    const re = new RegExp("^(http|https)://[\\w+\\.-]+/api$", "gmi");
+    if (!re.test(base_url)) {
+        add_api_client.className = "btn btn-outline-danger"
+
+        alert.innerHTML = 'The base URL must start with http:// or https:// and end with /api';
+        card_footer.classList.remove("d-none");
+        btn_test_connection.innerHTML = 'Test Connection';
+        return;
+    }
+
+    fetch('/opnsense_api_clients/test_connection', { method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ base_url: base_url, api_key: api_key, api_secret: api_secret }) })
+      .then(response => response.json())
+      .then(data => {
+        // Handle the response from the server
+        btn_test_connection.innerHTML = 'Test Connection';
+
+        if (data.status == 'success') {
+            add_api_client.className = "btn btn-outline-success"
+            add_api_client.disabled = false;
+        }
+        else {
+            add_api_client.className = "btn btn-outline-danger"
+            add_api_client.disabled = true;
+
+            alert.innerHTML = data.message;
+            card_footer.classList.remove("d-none");
+        }
+    });
+}
+
+function parseIniFile(event) {
+  event.preventDefault();
+
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const contents = e.target.result;
+    let lines = contents.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      let parts = lines[i].split('=');
+      if (parts[0] == 'key') {
+        document.getElementById('id_api_key').value = parts[1];
+      } else if (parts[0] == 'secret') {
+        document.getElementById('id_api_secret').value = parts[1];
+      }
+    }
+  };
+
+  reader.readAsText(file);
 }

@@ -1,6 +1,12 @@
+import json
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import OpnSenseApiClientForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+from utils.api_client import ApiClient
 
 
 @login_required
@@ -63,3 +69,20 @@ def set_default(request, pk):
         set_default_api_client.save()
 
     return redirect(request.META['HTTP_REFERER'])
+
+
+@login_required
+@require_POST
+@csrf_exempt
+def test_connection(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        base_url = data.get('base_url')
+        api_key = data.get('api_key')
+        api_secret = data.get('api_secret')
+        api_client = ApiClient(base_url=base_url, api_key=api_key, api_secret=api_secret)
+        result = api_client.test_connection()
+        if result[0]:
+            return JsonResponse({'status': 'success'})
+
+        return JsonResponse({'status': 'error', 'message': result[1]})
