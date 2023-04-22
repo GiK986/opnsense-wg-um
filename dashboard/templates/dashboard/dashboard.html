@@ -80,11 +80,17 @@
                     <td><a class="nav-link" href="{% url 'update_wg_users' client.uuid %}"> {{ client.name }} </a></td>
                     <td>{{ client.tunneladdress }}</td>
                     <td>{{ client.lastHandshake | date:"d.m.y H:i" }}</td>
-                    {% if 'config_url' in client %}
-                    <td><a class="nav-link" href="{{ client.config_url }}"> get file </a></td>
-                    {% else %}
-                    <td>not found file</td>
-                    {% endif %}
+                    <td>
+                        {% if client.config %}
+                            <a href="{% url 'download_wg_users' client.uuid %}" class="btn btn-outline-primary" >
+                                download
+                            </a>
+                        {% else %}
+                            <span class="btn btn-outline-primary" >
+                                not fount
+                            </span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

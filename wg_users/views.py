@@ -21,6 +21,14 @@ from utils.decorators import api_client_required
 def index(request):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     interface_clients = api_client.get_interface_clients()
+    wg_user_configs = WireguardConfig.objects.all().values('wg_user_uuid')
+
+    for client in interface_clients:
+        for wg_user_config in wg_user_configs:
+            client['config'] = False
+            if client['uuid'] == str(wg_user_config['wg_user_uuid']):
+                client['config'] = True
+                break
 
     context = {
         'wg_users': interface_clients,
@@ -88,7 +96,11 @@ def create(request):
 
 
 def download(request, wg_user_uuid):
-    wireguard_config = WireguardConfig.objects.get(wg_user_uuid=wg_user_uuid)
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+    if not wireguard_config:
+        messages.error(request, 'Wireguard config not found')
+        return redirect(request.META.get('HTTP_REFERER'))
+
     context = {
         'config': wireguard_config,
     }
@@ -112,7 +124,7 @@ def update(request, wg_user_uuid):
         del wg_user['uuid'], wg_user['csrfmiddlewaretoken']
         api_client.set_client(wg_user_uuid, wg_user)
 
-        wireguard_config = WireguardConfig.objects.get(wg_user_uuid=wg_user_uuid)
+        wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
         if wireguard_config:
             wireguard_config.name = wg_user['name']
             wireguard_config.keepalive = wg_user['keepalive']
@@ -133,13 +145,15 @@ def update(request, wg_user_uuid):
 @require_http_methods(["DELETE"])
 def delete(request, wg_user_uuid):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
+    wg_user_name = api_client.get_client(wg_user_uuid)['name']
     api_client.delete_client(wg_user_uuid)
-    wireguard_config = WireguardConfig.objects.get(wg_user_uuid=wg_user_uuid)
-    wg_user_name = None
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+
     if wireguard_config:
-        wg_user_name = wireguard_config.name
         wireguard_config.delete()
+
     messages.success(request, f'Deleted client {wg_user_name}')
+
     return JsonResponse({"status": "ok"})
 
 

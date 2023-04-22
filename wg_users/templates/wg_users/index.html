@@ -46,7 +46,15 @@
                     <td>{{ wg_user.tunneladdress }}</td>
                     <td>{{ wg_user.keepalive }}</td>
                     <td>
-                        <a href="{% url 'download_wg_users' wg_user.uuid %}" class="btn btn-outline-primary">download</a>
+                        {% if wg_user.config %}
+                            <a href="{% url 'download_wg_users' wg_user.uuid %}" class="btn btn-outline-primary" >
+                                download
+                            </a>
+                        {% else %}
+                            <span class="btn btn-outline-primary" >
+                                not fount
+                            </span>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
