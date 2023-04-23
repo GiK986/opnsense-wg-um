@@ -1,8 +1,10 @@
 import json
+import qrcode
+from io import BytesIO
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import HttpResponse
@@ -110,6 +112,65 @@ def download(request, wg_user_uuid):
     return response
 
 
+def generate_qrcode(request, wg_user_uuid):
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+    if not wireguard_config:
+        messages.error(request, 'Wireguard config not found')
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    context = {
+        'config': wireguard_config,
+    }
+    content = render_to_string('wg_users/wireguard-config.conf', context)
+
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+    qr.add_data(content)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Add QR code image to HTTP response
+    response = HttpResponse(content_type='image/png')
+    img_io = BytesIO()
+    img.save(img_io, 'PNG')
+    response.write(img_io.getvalue())
+    # response['Content-Disposition'] = f'attachment; filename="{wireguard_config.name}.png"'
+
+    return response
+
+
+def download_qrcode(request, wg_user_uuid):
+    response = generate_qrcode(request, wg_user_uuid)
+    wg_user_name = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first().name
+    response['Content-Disposition'] = f'attachment; filename="{wg_user_name}.png"'
+    return response
+
+
+def share_qrcode_link(request, wg_user_uuid):
+    wg_user = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+    wg_user_name = "Not found"
+    wg_user_config = False
+    if wg_user:
+        wg_user_name = wg_user.name
+        wg_user_config = True
+
+    content = {
+        "wg_user_uuid": wg_user_uuid,
+        "wg_user_name": wg_user_name,
+        "wg_user_config": wg_user_config,
+    }
+
+    return render(request, "wg_users/share_qrcode_link.html", content)
+
+
+@csrf_exempt
+@require_POST
+def get_qrcode_link(request):
+    data = json.loads(request.body)
+    wg_user_uuid = data['wg_user_uuid']
+
+    return JsonResponse({"link": f"{request.scheme}://{request.get_host()}/wg_users/share_qrcode_link/{wg_user_uuid}/"})
+
+
 @api_client_required
 @login_required
 def update(request, wg_user_uuid):
@@ -118,13 +179,16 @@ def update(request, wg_user_uuid):
     wg_user['uuid'] = wg_user_uuid
     interfaces = api_client.get_interfaces()
     allowed_ips_groups = request.user.allowedipsgroup_set.all().values('id', 'group_name')
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+    wg_user['config'] = False
+    if wireguard_config:
+        wg_user['config'] = True
 
     if request.method == "POST":
         wg_user.update(request.POST.dict())
-        del wg_user['uuid'], wg_user['csrfmiddlewaretoken']
+        del wg_user['uuid'], wg_user['csrfmiddlewaretoken'], wg_user['config']
         api_client.set_client(wg_user_uuid, wg_user)
 
-        wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
         if wireguard_config:
             wireguard_config.name = wg_user['name']
             wireguard_config.keepalive = wg_user['keepalive']

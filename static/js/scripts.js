@@ -26,18 +26,19 @@ window.addEventListener('DOMContentLoaded', event => {
 
 function share(uuid, event) {
     // Send a POST request to the /share endpoint
-    fetch('/share', { method: 'POST',
+    fetch('/wg_users/get_qrcode_link/', { method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({uuid: uuid}) })
+                        body: JSON.stringify({wg_user_uuid: uuid}) })
       .then(response => response.json())
       .then(data => {
         // Copy the URL to the user's clipboard
 
-        copyToClipboard(data.share_url);
+        copyToClipboard(data.link);
+
     });
 
-    event.currentTarget.innerText = 'copy to Clipboard '
-    event.currentTarget.innerHTML += '<i class="fas fa-circle-check"></i>'
+    event.currentTarget.innerText = 'copied to Clipboard ';
+    event.currentTarget.innerHTML += '<i class="fas fa-circle-check"></i>';
 }
 
 async function copyToClipboard(text) {

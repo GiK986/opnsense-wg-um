@@ -9,3 +9,4 @@ urllib3~=1.26.15
 mock~=5.0.1 # for testing
 testtools~=2.6.0 # for testing
 fixtures~=4.0.1 # for testing
+qrcode ~= 7.4.2

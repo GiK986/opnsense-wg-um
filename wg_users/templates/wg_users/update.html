@@ -11,8 +11,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row justify-content-center">
-    <div class="col-lg-6">
+<div class="row justify-content-center">
+    <div class="col-lg-8">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
             <div class="card-header"><h3 class="text-center font-weight-light my-4">Update WireGuard Users {{ wg_user.name }}</h3></div>
             <div class="card-body">
@@ -63,13 +63,15 @@
                         <div class="d-grid"><button type="submit" class="btn btn-primary btn-block" >Update User</button></div>
                     </div>
                 </form>
-
             </div>
             <div class="card-footer text-center py-3">
                 <button type="button" class="btn btn-outline-warning me-3" data-bs-toggle="modal" data-bs-target="#confirmReconfigurationModal">
                     Reconfiguration
                 </button>
-                <button type="button" class="btn btn-outline-primary me-3" onclick="share('{{ wg_user.name }}', event)" >Share Link </button>
+                <button type="button" class="btn btn-outline-primary me-3" onclick="share('{{ wg_user.uuid }}', event)" >Share QR Code Link </button>
+                <button type="button" class="btn btn-outline-success me-3" data-bs-toggle="modal" data-bs-target="#QRCodeModal">
+                    Show QR Code
+                </button>
                 <button type="button" class="btn btn-outline-danger me-3" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
                     Delete
                 </button>
@@ -98,7 +100,7 @@
 </div>
 
 <!-- Modal Reconfiguration -->
-<div class="modal fade" id="confirmReconfigurationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="confirmReconfigurationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -111,7 +113,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-floating">
-                        <select class="form-select form-select-sm" name="interface" id="interface">
+                        <select class="form-select form-select-sm" name="interface" id="interface1">
                             {% for interface in interfaces %}
                                 <option value="{{ interface.uuid }}">{{ interface.name }}</option>
                             {% endfor %}
@@ -121,7 +123,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-floating">
-                      <select class="form-select" id="allowed_ips_group" name="allowed_ips_group" aria-label="Floating label select example">
+                      <select class="form-select" id="allowed_ips_group1" name="allowed_ips_group" aria-label="Floating label select example">
                           {% for allowed_ips_group in allowed_ips_groups %}
                             <option value="{{ allowed_ips_group.id }}">{{ allowed_ips_group.group_name }}</option>
                           {% endfor %}
@@ -134,7 +136,33 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-warning" id="confirmReconfigurationBtn">Reconfiguration</button>
+        <button type="button" class="btn btn-warning" id="confirmReconfigurationBtn1">Reconfiguration</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal QR Code -->
+<div class="modal fade" id="QRCodeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="QRCodeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sl">
+    <div class="modal-content w-auto">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="QRCodeLabel">QR Code</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card" style="width: 18rem;">
+            {% if wg_user.config %}
+                <img src="{% url 'generate_qrcode_wg_users' wg_user.uuid %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <p class="card-text text-center"> QR Code for user {{ wg_user.name }}</p>
+                </div>
+            {% else %}
+                <div class="card-body">
+                    <p class="card-text text-center"> QR Code for user {{ wg_user.name }} not found</p>
+                </div>
+            {% endif %}
+        </div>
       </div>
     </div>
   </div>
