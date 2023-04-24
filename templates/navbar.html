@@ -8,28 +8,6 @@
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i>
     </button>
-    <div class="collapse navbar-collapse ms-3" id="navbarNavDarkDropdown">
-        <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    API Client: {% if user.default_api_client %}
-                    {{user.default_api_client.friendly_name}}
-                    {% else %} 'Not set!' {% endif %}
-                </button>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                    {% for api_client in user.open_sense_api_clients %}
-                    <li>
-                        <a class="dropdown-item {% if api_client.friendly_name == user.default_api_client.friendly_name %} active {% endif %}"
-                           href="{% url 'set_default_api_client' api_client.id %}">
-                            {{api_client.friendly_name}}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </li>
-        </ul>
-    </div>
-
     <!-- Navbar Search-->
     <form id="search-form" class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
