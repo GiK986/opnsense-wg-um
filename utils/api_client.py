@@ -1,5 +1,3 @@
-import json
-
 from utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient, ServiceClient
 from datetime import datetime, timedelta
 from ipaddress import ip_interface
@@ -186,3 +184,11 @@ class ApiClient:
             return True, "Test connection successful!"
         except Exception as ex:
             return False, str(ex)
+
+    def get_clients(self, query=None):
+        clients = self.get_interface_clients()
+
+        if query:
+            clients = [client for client in clients if query.lower() in client['name'].lower()]
+
+        return clients

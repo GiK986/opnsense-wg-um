@@ -97,6 +97,56 @@ def create(request):
     return render(request, "wg_users/create.html", context)
 
 
+@api_client_required
+@login_required
+def update(request, wg_user_uuid):
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    wg_user = api_client.get_client(wg_user_uuid)
+    wg_user['uuid'] = wg_user_uuid
+    interfaces = api_client.get_interfaces()
+    allowed_ips_groups = request.user.allowedipsgroup_set.all().values('id', 'group_name')
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+    wg_user['config'] = False
+    if wireguard_config:
+        wg_user['config'] = True
+
+    if request.method == "POST":
+        wg_user.update(request.POST.dict())
+        del wg_user['uuid'], wg_user['csrfmiddlewaretoken'], wg_user['config']
+        api_client.set_client(wg_user_uuid, wg_user)
+
+        if wireguard_config:
+            wireguard_config.name = wg_user['name']
+            wireguard_config.keepalive = wg_user['keepalive']
+            wireguard_config.save()
+        messages.success(request, f'Updated client {wg_user["name"]}')
+        return redirect("index_wg_users")
+    context = {
+        'wg_user': wg_user,
+        'interfaces': interfaces,
+        'allowed_ips_groups': allowed_ips_groups,
+    }
+    return render(request, "wg_users/update.html", context)
+
+
+@csrf_exempt
+@api_client_required
+@login_required
+@require_http_methods(["DELETE"])
+def delete(request, wg_user_uuid):
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    wg_user_name = api_client.get_client(wg_user_uuid)['name']
+    api_client.delete_client(wg_user_uuid)
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+
+    if wireguard_config:
+        wireguard_config.delete()
+
+    messages.success(request, f'Deleted client {wg_user_name}')
+
+    return JsonResponse({"status": "ok"})
+
+
 def download(request, wg_user_uuid):
     wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
     if not wireguard_config:
@@ -171,54 +221,16 @@ def get_qrcode_link(request):
     return JsonResponse({"link": f"{request.scheme}://{request.get_host()}/wg_users/share_qrcode_link/{wg_user_uuid}/"})
 
 
-@api_client_required
-@login_required
-def update(request, wg_user_uuid):
-    api_client = ApiClient(**request.user.default_api_client.to_dict())
-    wg_user = api_client.get_client(wg_user_uuid)
-    wg_user['uuid'] = wg_user_uuid
-    interfaces = api_client.get_interfaces()
-    allowed_ips_groups = request.user.allowedipsgroup_set.all().values('id', 'group_name')
-    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
-    wg_user['config'] = False
-    if wireguard_config:
-        wg_user['config'] = True
-
-    if request.method == "POST":
-        wg_user.update(request.POST.dict())
-        del wg_user['uuid'], wg_user['csrfmiddlewaretoken'], wg_user['config']
-        api_client.set_client(wg_user_uuid, wg_user)
-
-        if wireguard_config:
-            wireguard_config.name = wg_user['name']
-            wireguard_config.keepalive = wg_user['keepalive']
-            wireguard_config.save()
-        messages.success(request, f'Updated client {wg_user["name"]}')
-        return redirect("index_wg_users")
-    context = {
-        'wg_user': wg_user,
-        'interfaces': interfaces,
-        'allowed_ips_groups': allowed_ips_groups,
-    }
-    return render(request, "wg_users/update.html", context)
-
-
 @csrf_exempt
-@api_client_required
 @login_required
-@require_http_methods(["DELETE"])
-def delete(request, wg_user_uuid):
+def search(request, q):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
-    wg_user_name = api_client.get_client(wg_user_uuid)['name']
-    api_client.delete_client(wg_user_uuid)
-    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
-
-    if wireguard_config:
-        wireguard_config.delete()
-
-    messages.success(request, f'Deleted client {wg_user_name}')
-
-    return JsonResponse({"status": "ok"})
+    wg_users = api_client.get_clients(q)
+    results = list(map(lambda k: {'title': k['name'],
+                                  'url': f"{request.scheme}://{request.get_host()}/wg_users/update/{k['uuid']}/"
+                                  },
+                       wg_users))
+    return JsonResponse(results, safe=False)
 
 
 # AllowedIpsGroup

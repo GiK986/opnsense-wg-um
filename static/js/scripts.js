@@ -55,6 +55,7 @@ async function copyToClipboard(text) {
       document.body.removeChild(input);
     }
 }
+
 const modal = document.getElementById("search-results-modal");
 const resultsList = document.getElementById("search-results");
 const form = document.getElementById("search-form");
@@ -65,7 +66,7 @@ const modalTitle = document.getElementsByClassName("modal-title")[0]
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const query = input.value;
-  fetch(`/search?q=${encodeURIComponent(query)}`)
+  fetch(`/wg_users/search/${encodeURIComponent(query)}/`)
     .then((response) => response.json())
     .then((data) => {
       resultsList.innerHTML = "";
