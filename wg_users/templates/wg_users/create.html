@@ -12,15 +12,15 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
+    <div class="col-md-10 col-xl-8">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
             <div class="card-header"><h3 class="text-center font-weight-light my-4">Add WireGuard Users</h3></div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-                    <div class="row mb-3">
+                    <div class="row">
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="form-floating mb-3">
                                 <select class="form-select form-select-sm" name="interface">
                                     {% for interface in interfaces %}
                                         <option value="{{ interface.uuid }}">{{ interface.name }}</option>
@@ -30,7 +30,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="form-floating mb-3">
                               <select class="form-select" id="allowed_ips_group" name="allowed_ips_group" aria-label="Floating label select example">
                                   {% for allowed_ips_group in allowed_ips_groups %}
                                     <option value="{{ allowed_ips_group.id }}">{{ allowed_ips_group.group_name }}</option>

@@ -4535,7 +4535,7 @@ textarea.form-control-lg {
   --bs-pagination-disabled-color: #6c757d;
   --bs-pagination-disabled-bg: #fff;
   --bs-pagination-disabled-border-color: #dee2e6;
-  display: flex;
+  /* display: flex; */
   padding-left: 0;
   list-style: none;
 }

@@ -7,7 +7,14 @@ window.addEventListener('DOMContentLoaded', event => {
 
 
     if (datatablesSimple) {
-        new simpleDatatables.DataTable(datatablesSimple);
+        new simpleDatatables.DataTable(datatablesSimple, {
+            paging: true,
+//            scrollY: "50vh",
+            firstLast: true,
+            rowNavigation: true,
+            tabIndex: 1,
+//            hiddenHeader: true,
+        });
     }
 
     if (datatablesSimple2) {

@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="card-body">
-        <table id="datatablesSimple">
+        <table id="datatablesSimple" tabindex="1">
             <thead>
                 <tr>
                     <th>Interface Name</th>
@@ -42,7 +42,7 @@
             {% for wg_user in wg_users %}
                 <tr>
                     <td> {{ wg_user.interface_name }} </td>
-                    <td><a class="nav-link pt-0 pb-0" href="{% url 'update_wg_users' wg_user.uuid %}">{{ wg_user.name }}</a></td>
+                    <td><a class="btn btn-link pt-0 pb-0" href="{% url 'update_wg_users' wg_user.uuid %}">{{ wg_user.name }}</a></td>
                     <td>{{ wg_user.tunneladdress }}</td>
                     <td>{{ wg_user.keepalive }}</td>
                     <td>
@@ -51,7 +51,7 @@
                                 download
                             </a>
                         {% else %}
-                            <span class="btn btn-outline-primary" >
+                            <span class="btn btn-outline-secondary" >
                                 not found
                             </span>
                         {% endif %}
