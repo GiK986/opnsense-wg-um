@@ -1,6 +1,7 @@
 import json
 import qrcode
 from io import BytesIO
+from django.core.mail import EmailMessage
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
@@ -8,6 +9,8 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import HttpResponse
+
+from opnsense_wg_um import settings
 from utils.api_client import ApiClient
 from utils.pywgtools import wg_allowed_ips
 from utils.pywgtools.wgtools import genkey, pubkey
@@ -183,7 +186,6 @@ def generate_qrcode(request, wg_user_uuid):
     img_io = BytesIO()
     img.save(img_io, 'PNG')
     response.write(img_io.getvalue())
-    # response['Content-Disposition'] = f'attachment; filename="{wireguard_config.name}.png"'
 
     return response
 
@@ -231,6 +233,34 @@ def search(request, q):
                                   },
                        wg_users))
     return JsonResponse(results, safe=False)
+
+
+@csrf_exempt
+@login_required
+def send_email(request, wg_user_uuid):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        email = data['email']
+        wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+        if not wireguard_config:
+            messages.error(request, 'Wireguard config not found')
+            return JsonResponse({"status": "error"})
+
+        context = {
+            'config': wireguard_config,
+        }
+        content = render_to_string('wg_users/wireguard-config.conf', context)
+        file_buffer = BytesIO(content.encode('utf-8'))
+
+        subject = f"Wireguard config for {wireguard_config.name}"
+        message = f"Wireguard config for {wireguard_config.name}"
+        email_from = settings.DEFAULT_FROM_EMAIL
+        email_message = EmailMessage(subject, message, email_from, [email])
+        email_message.attach(f"{wireguard_config.name}.conf", file_buffer.getvalue(), 'application/octet-stream')
+        email_message.send()
+
+        messages.success(request, f'Email sent to {email}')
+        return JsonResponse({"status": "ok"})
 
 
 # AllowedIpsGroup

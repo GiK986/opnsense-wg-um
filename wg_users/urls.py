@@ -13,6 +13,7 @@ urlpatterns = [
     path("share_qrcode_link/<str:wg_user_uuid>/", views.share_qrcode_link, name="share_qrcode_link_wg_users"),
     path("get_qrcode_link/", views.get_qrcode_link, name="get_qrcode_link_wg_users"),
     path("search/<str:q>/", views.search, name="search_wg_users"),
+    path("send_email/<str:wg_user_uuid>/", views.send_email, name="send_email_wg_users"),
 
     # AllowedIpsGroup
     path("allowed_ips_group/", views.allowed_ips_group_index, name="index_allowed_ips_group"),

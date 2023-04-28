@@ -249,3 +249,19 @@ function parseIniFile(event) {
 
   reader.readAsText(file);
 }
+
+function sendEmail(event, wg_user_uuid) {
+    const url = '/wg_users/send_email/' + wg_user_uuid + '/';
+    const email = document.querySelector('#email').value
+
+    fetch(url, { method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({email: email}) })
+        .then(response => response.json())
+        .then(data => {
+            window.location.replace(document.referrer);
+        });
+
+    const sendEmailModal = new bootstrap.Modal(document.getElementById('sendEmailModal'), {});
+    sendEmailModal.hide();
+}
