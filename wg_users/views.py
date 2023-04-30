@@ -150,6 +150,58 @@ def delete(request, wg_user_uuid):
     return JsonResponse({"status": "ok"})
 
 
+@csrf_exempt
+@api_client_required
+@login_required
+@require_http_methods(["POST"])
+def reconfiguration(request, wg_user_uuid):
+    data = json.loads(request.body)
+    interface_uuid = data['interface_uuid']
+    allowed_ips_group_id = data['allowed_ips_group']
+    api_client = ApiClient(**request.user.default_api_client.to_dict())
+    wg_user = api_client.get_client(wg_user_uuid)
+    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+
+    server_config = api_client.get_server_config(interface_uuid)
+    allowed_ips = request.user.allowedipsgroup_set.get(id=allowed_ips_group_id).allowed_ips_calculated
+    server_endpoint = request.user.default_api_client.endpoint_url
+    private_key = genkey()
+    public_key = pubkey(private_key)
+
+    if not wireguard_config:
+        wireguard_config = WireguardConfig(
+            wg_user_uuid=wg_user_uuid,
+            name=wg_user['name'],
+            address=wg_user['tunneladdress'],
+            private_key=private_key,
+            public_key=public_key,
+            server_public_key=server_config['pubkey'],
+            server_endpoint=server_endpoint,
+            server_endpoint_port=server_config['port'],
+            server_allowed_ips=allowed_ips,
+            persistent_keepalive=wg_user['keepalive'],
+            dns=server_config['dns'],
+        )
+        wireguard_config.save()
+    else:
+        wireguard_config.private_key = private_key
+        wireguard_config.public_key = public_key
+        wireguard_config.server_public_key = server_config['pubkey']
+        wireguard_config.server_endpoint = server_endpoint
+        wireguard_config.server_endpoint_port = server_config['port']
+        wireguard_config.server_allowed_ips = allowed_ips
+        wireguard_config.persistent_keepalive = wg_user['keepalive']
+        wireguard_config.dns = server_config['dns']
+        wireguard_config.save()
+
+    wg_user['pubkey'] = public_key
+    api_client.set_client(wg_user_uuid, wg_user)
+    api_client.service_reconfigure()
+
+    messages.success(request, f'Reconfigured client {wg_user["name"]}')
+    return JsonResponse({"status": "ok"})
+
+
 def download(request, wg_user_uuid):
     wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
     if not wireguard_config:
@@ -257,6 +309,10 @@ def send_email(request, wg_user_uuid):
         email_from = settings.DEFAULT_FROM_EMAIL
         email_message = EmailMessage(subject, message, email_from, [email])
         email_message.attach(f"{wireguard_config.name}.conf", file_buffer.getvalue(), 'application/octet-stream')
+
+        wg_user_qrcode = generate_qrcode(request, wg_user_uuid)
+        email_message.attach(f"{wireguard_config.name}.png", wg_user_qrcode.getvalue(), 'image/png')
+
         email_message.send()
 
         messages.success(request, f'Email sent to {email}')

@@ -25,35 +25,33 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 function share(uuid, event) {
-    // Send a POST request to the /share endpoint
-    fetch('/wg_users/get_qrcode_link/', { method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({wg_user_uuid: uuid}) })
-      .then(response => response.json())
-      .then(data => {
-        // Copy the URL to the user's clipboard
-
-        copyToClipboard(data.link);
-
-    });
-
-    event.currentTarget.innerText = 'copied to Clipboard ';
-    event.currentTarget.innerHTML += '<i class="fas fa-circle-check"></i>';
+    const url_qrcode = window.location.origin + `/wg_users/share_qrcode_link/${uuid}/`;
+    copyToClipboard(url_qrcode);
 }
 
-async function copyToClipboard(text) {
-    try {
-      // Try to use navigator.clipboard (if available)
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      // Fall back to document.execCommand('copy')
-      const input = document.createElement('input');
-      input.value = text;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-    }
+function copyConfigFile(uuid) {
+    const url = window.location.origin + `/wg_users/download/${uuid}/`;
+    copyToClipboard(url);
+}
+
+function copyToClipboard(text) {
+    const input = document.createElement('input');
+    input.value = (text);
+    document.body.appendChild(input);
+    input.select();
+    input.setSelectionRange(0, 99999); /*For mobile devices*/
+
+    navigator.clipboard.writeText(input.value)
+        .then(() => {
+        alert("successfully copied");
+        })
+        .catch((err) => {
+        document.execCommand('copy');
+        console.log(err);
+        })
+        .finally(() => {
+        document.body.removeChild(input);
+        });
 }
 
 const modal = document.getElementById("search-results-modal");
@@ -99,33 +97,31 @@ function deleteWgUser(uuid, event) {
         // Refresh the page
         window.location.replace(document.referrer);
     });
-    $("#confirmDeleteModal").modal("hide");
+
 }
 
-const confirmReconfigurationBtn = document.getElementById("confirmReconfigurationBtn");
-if (confirmReconfigurationBtn) {
-    confirmReconfigurationBtn.onclick = (event) => {
-          url = event.currentTarget.baseURI + 'reconfiguration/';
-          const interface_uuid = document.querySelector('#interface').value
-          const allowed_ips_group = document.querySelector('#allowed_ips_group').value
+function reconfigurationWgUser(uuid) {
+      url = '/wg_users/reconfiguration/' + uuid + '/';
+      const interface_uuid = document.querySelector('#interface').value
+      const allowed_ips_group = document.querySelector('#allowed_ips_group').value
 
-          fetch(url, { method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({interface_uuid: interface_uuid,
-                                            allowed_ips_group: allowed_ips_group
-                                            }) })
-            .then((response) => response.json())
-            .then((data) => {
-              // Handle the response from the server
-              // ...
-              if (data) {
-                window.location.replace("/");
-              }
+      fetch(url, { method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({interface_uuid: interface_uuid,
+                                        allowed_ips_group: allowed_ips_group
+                                        }) })
+        .then((response) => response.json())
+        .then((data) => {
+          // Handle the response from the server
+          // ...
+          if (data) {
+            window.location.replace(document.referrer);
+          }
 
-            });
-          $("#confirmReconfigurationModal").modal("hide");
-        };
-}
+        });
+
+};
+
 
 
 function calculate_allowed_ips(event) {
@@ -262,6 +258,4 @@ function sendEmail(event, wg_user_uuid) {
             window.location.replace(document.referrer);
         });
 
-    const sendEmailModal = new bootstrap.Modal(document.getElementById('sendEmailModal'), {});
-    sendEmailModal.hide();
 }

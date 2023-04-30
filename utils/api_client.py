@@ -174,7 +174,7 @@ class ApiClient:
         response = self.server_client.set_server(uuid, wireguard_instance_info)
 
         if response['result'] == 'saved':
-            self.service_client.reconfigure()
+            self.service_reconfigure()
 
         return response
 
@@ -192,3 +192,6 @@ class ApiClient:
             clients = [client for client in clients if query.lower() in client['name'].lower()]
 
         return clients
+
+    def service_reconfigure(self):
+        self.service_client.reconfigure()

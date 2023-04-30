@@ -7,6 +7,7 @@ urlpatterns = [
     path("create/", views.create, name="create_wg_users"),
     path("update/<str:wg_user_uuid>/", views.update, name="update_wg_users"),
     path("delete/<str:wg_user_uuid>/", views.delete, name="delete_wg_users"),
+    path("reconfiguration/<str:wg_user_uuid>/", views.reconfiguration, name="reconfiguration_wg_users"),
     path("download/<str:wg_user_uuid>/", views.download, name="download_wg_users"),
     path("generate_qrcode/<str:wg_user_uuid>/", views.generate_qrcode, name="generate_qrcode_wg_users"),
     path("download_qrcode/<str:wg_user_uuid>/", views.download_qrcode, name="download_qrcode_wg_users"),
