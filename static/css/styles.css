@@ -11241,3 +11241,47 @@ body {
   font-size: 0.75rem;
   border-radius: 0.375rem !important;
 }
+
+.card-progress .progress {
+    height: 0.5rem;
+    background-color: rgba(33, 40, 50, 0.03);
+}
+
+.border-start-primary {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-secondary {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-secondary-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-success {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-success-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-info {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-info-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-warning {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-danger {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-light {
+  --bs-text-opacity: 1;
+  border-left-color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+}
+
+.border-start-lg {
+  border-left-width: 0.25rem !important;
+}

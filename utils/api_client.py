@@ -1,6 +1,7 @@
 from utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient, ServiceClient
 from datetime import datetime, timedelta
 from ipaddress import ip_interface
+from utils.helpers import calculate_total_ips
 
 
 class ApiClient:
@@ -131,6 +132,11 @@ class ApiClient:
 
         return interfaces
 
+    def get_interface_tunnel_address(self):
+        server = self.server_client.search_server()
+        interfaces = list(map(lambda x: {'name': x['name'], 'tunneladdress': x['tunneladdress']}, server['rows']))
+        return interfaces
+
     def get_server_config(self, uuid):
         server = self.server_client.get_server(uuid)
         server['server']['tunneladdress'] = list(server['server']['tunneladdress'].keys())[0]
@@ -195,3 +201,22 @@ class ApiClient:
 
     def service_reconfigure(self):
         self.service_client.reconfigure()
+
+    def get_client_stats_percent(self):
+        stats = self.get_client_stats_count()
+        total = stats['total']
+        inactive = stats['inactive']
+        inactive_more_3days = stats['inactive_more_3days']
+        active = stats['active']
+        interfaces = self.get_interface_tunnel_address()
+
+        total_ips = 0
+        for interface in interfaces:
+            total_ips += calculate_total_ips(interface['tunneladdress'])
+
+        return {
+            'total': round(total / total_ips * 100, 2) if total else 0,
+            'inactive': round(inactive / total * 100, 2) if total else 0,
+            'inactive_more_3days': round(inactive_more_3days / total * 100, 2) if total else 0,
+            'active': round(active / total * 100, 2) if total else 0,
+        }

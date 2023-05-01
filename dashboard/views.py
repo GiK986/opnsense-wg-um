@@ -12,6 +12,7 @@ def dashboard(request, filter_key=None):
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     clients = api_client.get_client_stats_by_filter(filter_key)
     status_count = api_client.get_client_stats_count()
+    status_percent = api_client.get_client_stats_percent()
 
     wg_user_configs = WireguardConfig.objects.all().values('wg_user_uuid')
 
@@ -24,6 +25,7 @@ def dashboard(request, filter_key=None):
 
     context = {
         "status_count": status_count,
+        "status_percent": status_percent,
         "clients": clients,
     }
     return render(request, "dashboard/dashboard.html", context)

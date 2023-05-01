@@ -11,38 +11,61 @@
 {% block content %}
 <div class="row">
     <div class="col-xl-3 col-md-3 col-6">
-        <div class="card bg-primary text-white mb-4">
+<!--        <div class="card bg-primary text-white mb-4">-->
+<!--            <div class="card-body">Total clients: {{ status_count.total }} </div>-->
+<!--            <div class="card-footer d-flex align-items-center justify-content-between">-->
+<!--                <a class="small text-white stretched-link" href="{% url 'dashboard' %}">View Details</a>-->
+<!--                <div class="small text-white"><i class="fas fa-angle-right"></i></div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="card card-progress border-start-lg border-start-primary mb-4">
+            <div class="progress rounded-0">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ status_percent.total }}%" aria-valuenow="{{ status_percent.total }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <div class="card-body">Total clients: {{ status_count.total }} </div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="{% url 'dashboard' %}">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            <div class="card-footer text-primary d-flex align-items-center justify-content-between">
+                <a class="small stretched-link" href="{% url 'dashboard' %}">View Details</a>
+                <div class="small">{{ status_percent.total }}%</div>
+                <div class="small"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-3 col-6">
-        <div class="card bg-success text-white mb-4">
+        <div class="card card-progress border-start-lg border-start-success mb-4">
+            <div class="progress rounded-0">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ status_percent.active }}%" aria-valuenow="{{ status_percent.active }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <div class="card-body">Active clients: {{ status_count.active }}</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="{% url 'dashboard_filter' 'active' %}">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                <a class="small text-success stretched-link" href="{% url 'dashboard_filter' 'active' %}">View Details</a>
+                <div class="small text-success">{{ status_percent.active }}%</div>
+                <div class="small text-success"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-3 col-6">
-        <div class="card bg-warning text-white mb-4">
+        <div class="card card-progress border-start-lg border-start-warning mb-4">
+            <div class="progress rounded-0">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ status_percent.inactive_more_3days }}%" aria-valuenow="{{ status_percent.inactive_more_3days }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <div class="card-body">Inactive 3 days: {{ status_count.inactive_more_3days }}</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="{% url 'dashboard_filter' 'inactive_more_3days' %}">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                <a class="small text-warning stretched-link" href="{% url 'dashboard_filter' 'inactive_more_3days' %}">View Details</a>
+                <div class="small text-warning">{{ status_percent.inactive_more_3days }}%</div>
+                <div class="small text-warning"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-3 col-6">
-        <div class="card bg-danger text-white mb-4">
+        <div class="card card-progress border-start-lg border-start-danger mb-4">
+            <div class="progress rounded-0">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ status_percent.inactive }}%" aria-valuenow="{{ status_percent.inactive }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <div class="card-body">Inactive clients: {{ status_count.inactive }}</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="{% url 'dashboard_filter' 'inactive' %}">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                <a class="small text-danger stretched-link" href="{% url 'dashboard_filter' 'inactive' %}">View Details</a>
+                <div class="small text-danger">{{ status_percent.inactive }}%</div>
+                <div class="small text-danger"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
