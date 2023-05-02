@@ -160,6 +160,7 @@ def reconfiguration(request, wg_user_uuid):
     allowed_ips_group_id = data['allowed_ips_group']
     api_client = ApiClient(**request.user.default_api_client.to_dict())
     wg_user = api_client.get_client(wg_user_uuid)
+    wg_user['keepalive'] = wg_user['keepalive'] if wg_user['keepalive'] else 15
     wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
 
     server_config = api_client.get_server_config(interface_uuid)
