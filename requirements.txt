@@ -10,3 +10,4 @@ mock==5.0.2 # for testing
 testtools~=2.6.0 # for testing
 fixtures==4.1.0 # for testing
 qrcode ~= 7.4.2
+django-environ==0.10.0
