@@ -1,65 +1,73 @@
 import json
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from .forms import OpnSenseApiClientForm
+from .models import OpnSenseApiClient
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from apps.utils.api_client import ApiClient
+from django.views import generic as views
+from django.contrib.auth import mixins as auth_mixins
+from django.urls import reverse_lazy
 
 
-@login_required
-# Create your views here.
-def index(request):
-    context = {
-        "api_clients": request.user.opnsenseapiclient_set.all(),
-        "segment": "index_api_clients",
-    }
-    return render(request, "opnsense_api_clients/index.html", context)
+class OpnSenseApiClientIndexView(auth_mixins.LoginRequiredMixin, views.TemplateView):
+    template_name = "opnsense_api_clients/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "api_clients": self.request.user.opnsenseapiclient_set.all(),
+            "segment": "index_api_clients",
+        })
+        return context
 
 
-@login_required
-def create(request):
-    form = OpnSenseApiClientForm(request.user)
-    context = {"form": form}
-    if request.method == "POST":
-        form = OpnSenseApiClientForm(request.user, request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("index_api_clients")
+class OpnSenseApiClientCreateView(auth_mixins.LoginRequiredMixin, views.CreateView):
+    template_name = "opnsense_api_clients/create.html"
+    form_class = OpnSenseApiClientForm
+    success_url = reverse_lazy("index_api_clients")
 
-    return render(request, "opnsense_api_clients/create.html", context)
-
-
-@login_required
-def update(request, pk):
-    api_client = request.user.opnsenseapiclient_set.get(id=pk)
-    form = OpnSenseApiClientForm(request.user, instance=api_client)
-    context = {"form": form}
-    if request.method == "POST":
-        form = OpnSenseApiClientForm(request.user, request.POST, instance=api_client)
-        if form.is_valid():
-            form.save()
-            return redirect("index_api_clients")
-
-    return render(request, "opnsense_api_clients/update.html", context)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            "user": self.request.user,
+        })
+        return kwargs
 
 
-@login_required
-def delete(request, pk):
-    api_client = request.user.opnsenseapiclient_set.get(id=pk)
-    if request.method == "POST":
-        api_client.delete()
-        return redirect("index_api_clients")
+class OpnSenseApiClientUpdateView(auth_mixins.LoginRequiredMixin, views.UpdateView):
+    template_name = "opnsense_api_clients/update.html"
+    form_class = OpnSenseApiClientForm
+    success_url = reverse_lazy("index_api_clients")
+    model = OpnSenseApiClient
 
-    context = {"api_client": api_client}
-    return render(request, "opnsense_api_clients/delete.html", context)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            "user": self.request.user,
+        })
+        return kwargs
+
+
+class DeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
+    template_name = "opnsense_api_clients/delete.html"
+    model = OpnSenseApiClient
+    success_url = reverse_lazy("index_api_clients")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "api_client": self.object,
+        })
+        return context
 
 
 @login_required
 def set_default(request, pk):
     current_api_client = request.user.default_api_client
-    set_default_api_client = request.user.opnsenseapiclient_set.get(id=pk)
+    set_default_api_client = OpnSenseApiClient.objects.get(id=pk)
 
     if current_api_client and current_api_client != set_default_api_client:
         current_api_client.is_default = False
