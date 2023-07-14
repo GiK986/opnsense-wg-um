@@ -84,7 +84,7 @@
                     <th>Name</th>
                     <th>Tunnel address</th>
                     <th>Last Handshake</th>
-                    <th>Config file</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tfoot>
@@ -93,7 +93,7 @@
                     <th>Name</th>
                     <th>Tunnel address</th>
                     <th>Last Handshake</th>
-                    <th>Config file</th>
+                    <th>Action</th>
                 </tr>
             </tfoot>
             <tbody>
@@ -104,15 +104,7 @@
                     <td>{{ client.tunneladdress }}</td>
                     <td>{{ client.lastHandshake | date:"d.m.y H:i" }}</td>
                     <td>
-                        {% if client.config %}
-                            <a href="{% url 'download_wg_users' client.uuid %}" class="btn btn-outline-primary" >
-                                download
-                            </a>
-                        {% else %}
-                            <span class="btn btn-outline-secondary" >
-                                not found
-                            </span>
-                        {% endif %}
+                        {% include 'includes/td-client-config-btn.html' %}
                     </td>
                 </tr>
                 {% endfor %}

@@ -10,56 +10,49 @@
 {% endblock %}
 
 {% block content %}
-<div class="card mb-4">
-    <div class="card-header">
-        <div class="d-flex justify-content-between">
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between">
             <span class="pt-2"><i class="fas fa-table me-1"></i>
                 WireGuard Users</span>
-            <a href="{% url 'create_wg_users' %}" class="btn btn-primary text-end">Add WG Users</a>
+                <a href="{% url 'create_wg_users' %}" class="btn btn-primary text-end">Add WG Users</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple" tabindex="1">
+                <thead>
+                <tr>
+                    <th>Interface Name</th>
+                    <th>User Name</th>
+                    <th>Tunnel Address</th>
+                    <th>Keepalive</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th>Interface Name</th>
+                    <th>User Name</th>
+                    <th>Tunnel Address</th>
+                    <th>Keepalive</th>
+                    <th>Action</th>
+                </tr>
+                </tfoot>
+                <tbody>
+                {% for client in wg_users %}
+                    <tr>
+                        <td> {{ client.interface_name }} </td>
+                        <td><a class="btn btn-link"
+                               href="{% url 'update_wg_users' client.uuid %}">{{ client.name }}</a></td>
+                        <td>{{ client.tunneladdress }}</td>
+                        <td>{{ client.keepalive }}</td>
+                        <td>
+                            {% include 'includes/td-client-config-btn.html' %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="card-body">
-        <table id="datatablesSimple" tabindex="1">
-            <thead>
-                <tr>
-                    <th>Interface Name</th>
-                    <th>User Name</th>
-                    <th>Tunnel Address</th>
-                    <th>Keepalive</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tfoot>
-                <tr>
-                    <th>Interface Name</th>
-                    <th>User Name</th>
-                    <th>Tunnel Address</th>
-                    <th>Keepalive</th>
-                    <th>Action</th>
-                </tr>
-            </tfoot>
-            <tbody>
-            {% for wg_user in wg_users %}
-                <tr>
-                    <td> {{ wg_user.interface_name }} </td>
-                    <td><a class="btn btn-link pt-0 pb-0" href="{% url 'update_wg_users' wg_user.uuid %}">{{ wg_user.name }}</a></td>
-                    <td>{{ wg_user.tunneladdress }}</td>
-                    <td>{{ wg_user.keepalive }}</td>
-                    <td>
-                        {% if wg_user.config %}
-                            <a href="{% url 'download_wg_users' wg_user.uuid %}" class="btn btn-outline-primary" >
-                                download
-                            </a>
-                        {% else %}
-                            <span class="btn btn-outline-secondary" >
-                                not found
-                            </span>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
 {% endblock %}

@@ -1,0 +1,12 @@
+{% if client.config %}
+    <a href="{% url 'download_wg_users' client.uuid %}" class="btn btn-outline-primary mb-1">
+        <i class="fa fa-cloud-download" aria-hidden="true"></i>
+    </a>
+    <span class="btn btn-outline-success mb-1" onclick="copyConfigFile('{{ client.uuid }}')">
+        <i class="fa fa-share-alt-square" aria-hidden="true"></i>
+    </span>
+{% else %}
+    <span class="btn btn-outline-secondary disabled mb-1">
+        <i class="fa fa-times" aria-hidden="true"></i>
+    </span>
+{% endif %}

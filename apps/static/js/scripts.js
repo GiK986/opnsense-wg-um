@@ -31,10 +31,11 @@ function share(uuid, event) {
 
 function copyConfigFile(uuid) {
     const url = window.location.origin + `/wg_users/download/${uuid}/`;
-    copyToClipboard(url);
+    let targetElement = event.currentTarget.firstElementChild;
+    copyToClipboard(url, targetElement);
 }
 
-function copyToClipboard(text) {
+function copyToClipboard(text, targetElement) {
     const input = document.createElement('input');
     input.value = (text);
     document.body.appendChild(input);
@@ -43,7 +44,8 @@ function copyToClipboard(text) {
 
     navigator.clipboard.writeText(input.value)
         .then(() => {
-        alert("successfully copied");
+        targetElement.setAttribute('class', 'svg-inline--fa fa-check');
+        // alert("successfully copied");
         })
         .catch((err) => {
         document.execCommand('copy');
