@@ -1,23 +1,10 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block title %} Dashboard - OpnWG {% endblock %}
-
-{% block page_name %} Dashboard {% endblock %}
-
-{% block breadcrumbs %}
-    <li class="breadcrumb-item active">Dashboard</li>
-{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-xl-3 col-md-3 col-6">
-<!--        <div class="card bg-primary text-white mb-4">-->
-<!--            <div class="card-body">Total clients: {{ status_count.total }} </div>-->
-<!--            <div class="card-footer d-flex align-items-center justify-content-between">-->
-<!--                <a class="small text-white stretched-link" href="{% url 'dashboard' %}">View Details</a>-->
-<!--                <div class="small text-white"><i class="fas fa-angle-right"></i></div>-->
-<!--            </div>-->
-<!--        </div>-->
         <div class="card card-progress border-start-lg border-start-primary mb-4">
             <div class="progress rounded-0">
                 <div class="progress-bar bg-primary" role="progressbar" style="width: {{ status_percent.total }}%" aria-valuenow="{{ status_percent.total }}" aria-valuemin="0" aria-valuemax="100"></div>

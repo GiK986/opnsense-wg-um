@@ -1,27 +1,21 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
-<head>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="OPNSense Wireguard User Management" />
+        <meta name="author" content="GiK986" />
 
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>{% block title %} {% endblock %}</title>
 
-    <meta name="description" content="Sb Admin dashboard migrated to Python by AppSeed" />
-    <meta name="author" content="startbootstrap & AppSeed" />
-    
-    <title>
-        Django SB Admin - {% block title %}{% endblock %} | AppSeed
-    </title>
-
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
-    <link href="/apps/static/assets/css/styles.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-
-    <!-- Specific Page CSS goes HERE  -->
-    {% block stylesheets %}{% endblock stylesheets %}
-
-</head>
-<body class="sb-nav-fixed">
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/img/wireguard_logo_icon_168760.ico' %}">
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+        <link href="{% static 'css/styles.css'%}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
         
     {% include 'includes/navigation.html' %}
 
@@ -32,13 +26,28 @@
             
         </div>
         <div id="layoutSidenav_content">
-        
-            {% block content %}{% endblock content %}
+        <main>
+            <div class="container-fluid px-4">
+                <div class="pc-container">
+                    <div class="pc-content">
+                        {% include 'includes/flash-messages.html' %}
+                        {% include 'includes/page-header.html' %}
+                        <div class="row">
+                            <div class="col">
+                                {% block content %} {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
 
             {% include 'includes/footer.html' %}
             
         </div>
     </div>
+
+    {% include 'includes/search-results-modal.html' %}
 
     {% include 'includes/scripts.html' %} 
 

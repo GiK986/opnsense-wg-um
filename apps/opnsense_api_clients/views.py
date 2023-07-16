@@ -20,6 +20,12 @@ class OpnSenseApiClientIndexView(auth_mixins.LoginRequiredMixin, views.TemplateV
         context.update({
             "api_clients": self.request.user.opnsenseapiclient_set.all(),
             "segment": "index_api_clients",
+            "page": {
+                "title": "OpnSense API clients",
+                "breadcrumbs": [
+                    {"name": "Dashboard", "url": reverse_lazy("dashboard")},
+                ]
+            }
         })
         return context
 
@@ -28,6 +34,20 @@ class OpnSenseApiClientCreateView(auth_mixins.LoginRequiredMixin, views.CreateVi
     template_name = "opnsense_api_clients/create.html"
     form_class = OpnSenseApiClientForm
     success_url = reverse_lazy("index_api_clients")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "segment": "index_api_clients",
+            "page": {
+                "title": "Create OpnSense API client",
+                "breadcrumbs": [
+                    {"name": "Dashboard", "url": reverse_lazy("dashboard")},
+                    {"name": "OpnSense API clients", "url": reverse_lazy("index_api_clients")},
+                ]
+            }
+        })
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -42,6 +62,20 @@ class OpnSenseApiClientUpdateView(auth_mixins.LoginRequiredMixin, views.UpdateVi
     form_class = OpnSenseApiClientForm
     success_url = reverse_lazy("index_api_clients")
     model = OpnSenseApiClient
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "segment": "index_api_clients",
+            "page": {
+                "title": "Update OpnSense API client",
+                "breadcrumbs": [
+                    {"name": "Dashboard", "url": reverse_lazy("dashboard")},
+                    {"name": "OpnSense API clients", "url": reverse_lazy("index_api_clients")},
+                ]
+            }
+        })
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -59,7 +93,14 @@ class DeleteView(auth_mixins.LoginRequiredMixin, views.DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            "api_client": self.object,
+            "segment": "index_api_clients",
+            "page": {
+                "title": "Delete OpnSense API client",
+                "breadcrumbs": [
+                    {"name": "Dashboard", "url": reverse_lazy("dashboard")},
+                    {"name": "OpnSense API clients", "url": reverse_lazy("index_api_clients")},
+                ]
+            }
         })
         return context
 

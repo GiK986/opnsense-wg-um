@@ -1,20 +1,12 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
-{% block title %} Add API client {% endblock %}
-
-{% block page_name %} Add API client {% endblock %}
-
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li class="breadcrumb-item"><a href="{% url 'index_api_clients' %}">OpnSense API clients</a></li>
-<li class="breadcrumb-item active">Add API client</li>
-{% endblock %}
+{% block title %} Create OpnSense API client {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-6">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header"><h3 class="text-center font-weight-light my-4">OpnSense API client</h3></div>
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">Create OpnSense API client</h3></div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
@@ -69,9 +61,7 @@
 
             </div>
             <div class="card-footer text-center py-3 d-none">
-                <div id="message" class="alert alert-danger" role="alert">
-                  This is a danger alert—check it out!
-                </div>
+                <div id="message" class="alert alert-danger" role="alert"></div>
             </div>
         </div>
     </div>

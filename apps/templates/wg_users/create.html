@@ -1,20 +1,12 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
-{% block title %} Add WireGuard Users {% endblock %}
-
-{% block page_name %} Add WireGuard Users {% endblock %}
-
-{% block breadcrumbs %}
-    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'index_wg_users' %}">WireGuard Users</a></li>
-    <li class="breadcrumb-item active">Add WireGuard Users</li>
-{% endblock %}
+{% block title %} Create WireGuard Users {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10 col-xl-8">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header"><h3 class="text-center font-weight-light my-4">Add WireGuard Users</h3></div>
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">Create WireGuard Users</h3></div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}

@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views import generic as views
+from django.urls import reverse_lazy
 
 
 # Create your views here.
@@ -59,3 +61,21 @@ def logout_user(request):
     logout(request)
     messages.success(request, "You are now logged out")
     return redirect("login")
+
+
+class SampleView(views.TemplateView):
+    template_name = "home/sample-page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "api_client": self.request.user.default_api_client,
+            "page": {
+                "title": "Sample Page",
+                "breadcrumbs": [
+                    {"name": "Dashboard", "url": reverse_lazy("dashboard")},
+                ]
+            }
+
+        })
+        return context

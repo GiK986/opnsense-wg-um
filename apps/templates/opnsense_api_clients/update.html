@@ -1,20 +1,12 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
-{% block title %} Update API client {% endblock %}
-
-{% block page_name %} Update API client {% endblock %}
-
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li class="breadcrumb-item"><a href="{% url 'index_api_clients' %}">OpnSense API clients</a></li>
-<li class="breadcrumb-item active">Update API client</li>
-{% endblock %}
+{% block title %} Update OpnSense API client {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-6">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header"><h3 class="text-center font-weight-light my-4">OpnSense API client</h3></div>
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">Update OpnSense API client</h3></div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
@@ -52,12 +44,23 @@
                         <label>API secret</label>
                     </div>
 
+                    <div class="input-group mt-3">
+                        <input id="fileInput" name="fileInput" type="file" class="form-control" placeholder="Upload file..." aria-label="Upload file..." aria-describedby="btnFileInput"/>
+                        <label class="input-group-text" for="fileInput">Load from apikey.txt</label>
+                        <button class="btn btn-primary" id="btnFileInput" onclick="parseIniFile(event)" ><i class="fas fa-upload"></i></button>
+                    </div>
+
                     <div class="mt-3 mb-0">
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-block">Update API Client</button>
+                        <div class="d-flex justify-content-between">
+                            <button id="btn-test-connection" onclick="test_connection(event)" class="btn btn-outline-warning">Test Connection</button>
+                            <button type="submit" id="add-api-client" class="btn btn-outline-primary btn-block" disabled >Update API Client</button>
                         </div>
                     </div>
+
                 </form>
+            </div>
+            <div class="card-footer text-center py-3 d-none">
+                <div id="message" class="alert alert-danger" role="alert"></div>
             </div>
         </div>
     </div>

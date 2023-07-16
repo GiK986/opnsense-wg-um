@@ -117,7 +117,7 @@ function reconfigurationWgUser(uuid) {
           // Handle the response from the server
           // ...
           if (data) {
-            window.location.replace(document.referrer);
+            window.location.replace(document.URL);
           }
 
         });

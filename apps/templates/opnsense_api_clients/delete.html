@@ -1,20 +1,12 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
-{% block title %} Delete API client {% endblock %}
-
-{% block page_name %} Delete API client {% endblock %}
-
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-<li class="breadcrumb-item"><a href="{% url 'index_api_clients' %}">OpnSense API clients</a></li>
-<li class="breadcrumb-item active">Delete API client</li>
-{% endblock %}
+{% block title %} Delete OpnSense API client {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-4">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header"><h3 class="text-center font-weight-light my-4">OpnSense API client</h3></div>
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">Delete OpnSense API client</h3></div>
             <div class="card-body">
                 <h5>Are you sure you want to delete "{{ api_client }}" ?</h5>
                 <form method="post">

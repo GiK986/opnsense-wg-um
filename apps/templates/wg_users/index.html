@@ -1,13 +1,6 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block title %} WireGuard Users {% endblock %}
-
-{% block page_name %} WireGuard Users {% endblock %}
-
-{% block breadcrumbs %}
-    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-    <li class="breadcrumb-item active">WireGuard Users</li>
-{% endblock %}
 
 {% block content %}
     <div class="card mb-4">

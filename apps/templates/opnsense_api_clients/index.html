@@ -1,13 +1,6 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block title %} OpnSense API clients {% endblock %}
-
-{% block page_name %} OpnSense API clients {% endblock %}
-
-{% block breadcrumbs %}
-    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-    <li class="breadcrumb-item active">Open Sense API clients</li>
-{% endblock %}
 
 {% block content %}
 <div class="card mb-4">
@@ -42,7 +35,7 @@
             {% for api_client in api_clients %}
                 <tr>
                     <td> {% if api_client.is_default %} Yes {% endif %} </td>
-                    <td><a class="nav-link pt-0 pb-0" href="{% url 'update_api_client' api_client.id %}">{{ api_client.friendly_name }}</a></td>
+                    <td><a class="btn btn-link" href="{% url 'update_api_client' api_client.id %}">{{ api_client.friendly_name }}</a></td>
                     <td>{{ api_client.base_url }}</td>
                     <td>{{ api_client.endpoint_url }}</td>
                     <td>
