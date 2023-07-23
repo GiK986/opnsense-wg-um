@@ -137,3 +137,6 @@ dmypy.json
 
 # Dockerfile run configurations
 /.run
+
+# Django static files
+/staticfiles
