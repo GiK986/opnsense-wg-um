@@ -15,5 +15,3 @@ class APIClientRequiredMixin:
     @property
     def api_client(self):
         return ApiClient(**self.request.user.default_api_client.to_dict())
-
-

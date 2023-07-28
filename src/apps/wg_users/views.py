@@ -160,7 +160,6 @@ class WGUsersUpdateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRe
         return context
 
 
-
 @api_client_required
 @login_required
 def update(request, wg_user_uuid):
