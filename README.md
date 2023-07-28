@@ -29,7 +29,7 @@ It allows you to easily create, update, delete and generate .conf file for WireG
  Copy the contents of the file to a safe location.
  The contents of this file look like this:
 
- > key=w86XNZob/8Oq8aC5r0kbNarNtdpoQU781fyoeaOBQsBwkXUt
+ > key=w86XNZob/8Oq8aC5r0kbNarNtdpoQU781fyoeaOBQsBwkXUt  
  > secret=XeD26XVrJ5ilAc/EmglCRC+0j2e57tRsjHwFepOseySWLM53pJASeTA3
  
  The `key` is the API key and the `secret` is the API secret needed to create a new OPNsense API client.
@@ -69,40 +69,57 @@ It allows you to easily create, update, delete and generate .conf file for WireG
 
  For more information on installing the WireGuard tools on macOS, please see the [WireGuard installation instructions](https://www.wireguard.com/install/).
 
- ## Installation
+ ## Installation locally
 
  To install this project, follow the steps below:
 
  1. Clone this repository to your local machine.
- 2. Navigate to the cloned repository and run the following command to install the required dependencies:  
+
+    ```bash
+    git clone https://github.com/GiK986/opnsense-wg-um.git
+    ```
+2. Navigate to the cloned repository:
+    
+    ```bash
+    cd opnsense-wg-um
+    ```
+
+3. Create a virtual environment for the project by running:
+    
+    ``` bash
+    python -m venv venv
+    ```
+    
+4. Install the required dependencies:  
  
- ``` bash
- pip install -r requirements.txt
- ```
+     ``` bash
+     pip install -r ./src/requirements.txt
+     ```
 
- 3. Generate a secret key and save it to `secret_key.txt` by running:
-
- ``` bash
- openssl rand -hex 32 >> secret_key.txt
- ```
+5. Rename .env.dev-sample to .env.dev and .env.dev.db-sample to .env.dev.db. Update the environment variables.
+    - generate a secret key by running:
+     ``` bash
+     sed -i "" "s/^DJANGO_SECRET_KEY=.*$/DJANGO_SECRET_KEY=$(openssl rand -hex 32)/" .env.dev
+     ```
  
- 4. Migrate the database by running:  
+6. Migrate the database by running:  
 
- ``` bash
- python manage.py migrate
- ```
+     ``` bash
+     cd ./src
+     python manage.py migrate
+     ```
 
- 5. Create a superuser account by running:
+7. Create a superuser account by running:
 
- ``` bash
- python manage.py createsuperuser
- ```
+     ``` bash
+     python manage.py createsuperuser
+     ```
  
- 6. Finally, run the development server using:
+8. Finally, run the development server using:
  
- ``` bash
- python manage.py runserver 0.0.0.0:8000
- ```
+     ``` bash
+     python manage.py runserver 0.0.0.0:8000
+     ```
  
  You can then access the application by navigating to [`http://localhost:8000`](http://localhost:8000) in your web browser.
 
@@ -120,39 +137,35 @@ It allows you to easily create, update, delete and generate .conf file for WireG
  docker build --platform=linux/amd64 -t gik986/opnsense-wg-um:latest-amd64 .
  ```
 
-## Want to use this project?
+## Using docker-compose (recommended)
 
 ### Development
 
 Uses the default Django development server.
 
 1. Rename *.env.dev-sample* to *.env.dev*.
-1. Update the environment variables in the *docker-compose.yml* and *.env.dev* files.
-1. Build the images and run the containers:
+2. Update the environment variables in the *docker-compose.yml* and *.env.dev* files.
+3. Build the images and run the containers:
 
     ```sh
-    $ docker-compose up -d --build
+    docker-compose up -d --build
     ```
 
-    Test it out at [http://localhost:8000](http://localhost:8000). The "app" folder is mounted into the container and your code changes apply automatically.
+    Test it out at [http://localhost:8000](http://localhost:8000). The "src" folder is mounted into the container and your code changes apply automatically.
 
 ### Production
 
 Uses gunicorn + nginx.
 
 1. Rename *.env.prod-sample* to *.env.prod* and *.env.prod.db-sample* to *.env.prod.db*. Update the environment variables.
-1. Build the images and run the containers:
+2. Build the images and run the containers:
 
     ```sh
-    $ docker-compose -f docker-compose.prod.yml up -d --build
+    docker-compose -f docker-compose.prod-nginx.yml up -d --build
     ```
 
-    Test it out at [http://localhost:1337](http://localhost:1337). No mounted folders. To apply changes, the image must be re-built.
+    Test it out at [http://localhost](http://localhost). No mounted folders. To apply changes, the image must be re-built.
 
-
-## Contributing
-
-If you would like to contribute to this project, please follow the guidelines in CONTRIBUTING.md.
 
 ## License
 
