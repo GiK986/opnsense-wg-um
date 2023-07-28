@@ -132,11 +132,14 @@ dmypy.json
 .DS_Store
 .idea
 
-# Django secret key
-/app/secret_key.txt
-
-# Dockerfile run configurations
-/.run
-
 # Django static files
 /staticfiles
+
+# Django media files
+/mediafiles
+
+# .env files
+/.env.dev
+/.env.dev.db
+/.env.prod
+/.env.prod.db

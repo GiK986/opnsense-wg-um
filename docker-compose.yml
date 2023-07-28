@@ -1,30 +1,23 @@
 version: '3.8'
+
 services:
-  opnsense_wg_um:
-    container_name: opnsense_wg_um
-    image: opnsense_wg_um
-    restart: always
-    env_file: .env
+  web:
     build: .
-    networks:
-      - db_network
-      - web_network
-  nginx:
-    container_name: nginx
-    restart: always
-    image: "nginx:latest"
-    ports:
-      - "5085:5085"
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - ./staticfiles:/home/app/web/staticfiles
-    networks:
-      - web_network
-    depends_on: 
-      - opnsense_wg_um
-networks:
-  db_network:
-    driver: bridge
-  web_network:
-    driver: bridge
- 
+      - ./src/:/usr/src/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev.db
+
+volumes:
+  postgres_data_dev:
