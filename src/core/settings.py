@@ -71,7 +71,7 @@ INSTALLED_APPS = [
 
     # Apps
     "apps.dashboard",
-    "apps.users",
+    "apps.accounts",
     "apps.opnsense_api_clients",
     "apps.wg_users",
 ]
@@ -87,7 +87,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "apps.users.backends.CustomAuthBackend",
+    "apps.accounts.backends.CustomAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
