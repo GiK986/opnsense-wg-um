@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import environ
 import os
 from pathlib import Path
+from django.urls import reverse_lazy
 
 env = environ.Env(
     # set casting, default value
@@ -48,8 +49,8 @@ CSRF_TRUSTED_ORIGINS = [f"http://{x}:{CSRF_PORT}" for x in ALLOWED_HOSTS]
 # Mail settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# if DEBUG:
+#     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
@@ -91,10 +92,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-LOGIN_URL = "/login"
+LOGIN_URL = reverse_lazy("login")
 ROOT_URLCONF = "core.urls"
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = reverse_lazy("dashboard")
+LOGOUT_REDIRECT_URL = reverse_lazy("login")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "apps/templates")  # ROOT dir for templates
 
 TEMPLATES = [

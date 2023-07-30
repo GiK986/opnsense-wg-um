@@ -1,94 +1,63 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} Register {% endblock %} 
-
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block title %} Register {% endblock %}
 
 {% block content %}
 
-    <main>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-5">
-                    <div class="card shadow-lg border-0 rounded-lg mt-5">
-                        <div class="card-header text-center">
-                            <h3 class="text-center font-weight-light my-4">Register</h3>
-                            <span class="text-center">
-                                {% if msg %}
-                                    {{ msg | safe }}
-                                {% else %}
-                                    Add your credentials
-                                {% endif %} 
-                            </span>                            
+    <div class="col-lg-7">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Account</h3></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                {{ form.first_name }}
+                                <label for="inputFirstName">First name</label>
+                            </div>
                         </div>
-                        <div class="card-body">
-
-                            {% if success %}
-                            
-                                <div class="text-center"> 
-
-                                    <a href="{% url 'login' %}" class="btn btn-primary">Sign IN</a>
-
-                                </div>
-
-                            {% else %}
-
-                                <form role="form" method="post" action="">
-
-                                    {% csrf_token %} 
-
-                                    <div class="form-row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label class="small mb-1" for="inputFirstName">Username</label>
-                                                {{ form.username }}
-                                            </div>
-                                            <span class="text-error">{{ form.username.errors }}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="small mb-1" for="inputEmailAddress">Email</label>
-                                        {{ form.email }}
-                                    </div>
-                                    <span class="text-error">{{ form.email.errors }}</span>
-                                        
-                                    <div class="form-group">
-                                        <label class="small mb-1" for="inputPassword">Password</label>
-                                        {{ form.password1 }}
-                                    </div>
-                                    <span class="text-error">{{ form.password1.errors }}</span>
-
-                                    <div class="form-group">
-                                        <label class="small mb-1" for="inputPassword">Password Check</label>
-                                        {{ form.password2 }}
-                                    </div>             
-                                    <span class="text-error">{{ form.password2.errors }}</span>                   
-                                        
-                                    <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
-                                        <button type="submit" name="register" class="btn btn-primary">Register</button>
-                                        <div class="small">
-                                            <a href="{% url 'login' %}">Login</a></div>
-                                    </div>
-
-                                </form>
-                            
-                            {% endif %}     
-
-                        </div>
-                        <div class="card-footer text-center">
-                            <div class="small">
-                                Django SB Admin - Open-source Seed Project
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.last_name }}
+                                <label for="inputLastName">Last name</label>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="form-floating mb-3">
+                        {{ form.email }}
+                        <label for="inputEmail">Email address</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        {{ form.username }}
+                        <label for="username">User Name</label>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                {{ form.password1 }}
+                                <label for="inputPassword">Password</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                {#                            <input class="form-control" id="inputPasswordConfirm" type="password" name="confirm_password" placeholder="Confirm password" />#}
+                                {{ form.password2 }}
+                                <label for="inputPasswordConfirm">Confirm Password</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 mb-0">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <div class="small"><a href="{% url 'login' %}">Have an account? Go to login</a></div>
             </div>
         </div>
-    </main>
+    </div>
 
 {% endblock content %}
-
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
