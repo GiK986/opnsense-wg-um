@@ -13,7 +13,6 @@ class OpnSenseApiClient(models.Model):
     api_key = models.CharField(max_length=150)
     api_secret = models.CharField(max_length=150)
     is_default = models.BooleanField(default=False)
-    description = models.CharField(max_length=150, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

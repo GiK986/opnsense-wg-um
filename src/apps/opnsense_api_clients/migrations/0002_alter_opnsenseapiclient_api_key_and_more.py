@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("apps_opnsense_api_clients", "0001_initial"),
+        ("opnsense_api_clients", "0001_initial"),
     ]
 
     operations = [
