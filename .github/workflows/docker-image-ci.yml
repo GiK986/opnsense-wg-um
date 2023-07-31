@@ -29,5 +29,5 @@ jobs:
           context: .
           file: ./Dockerfile.prod-nginx
           push: true
-          tag: ${{ secrets.DOCKERHUB_USERNAME }}/opnsense-wg-um-ci:lates
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/opnsense-wg-um-ci:lates
 
