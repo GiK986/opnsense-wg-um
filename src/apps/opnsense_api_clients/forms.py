@@ -1,4 +1,3 @@
-# from django.forms import ModelForm
 from .models import OpnSenseApiClient
 from apps.utils.forms import BaseForm
 

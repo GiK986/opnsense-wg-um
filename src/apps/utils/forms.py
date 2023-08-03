@@ -16,7 +16,7 @@ class BaseForm(ModelForm):
                 elif field.widget.input_type == 'password':
                     field.widget.attrs.update({'class': 'form-control', 'placeholder': field.label})
                 elif field.widget.input_type == 'checkbox':
-                    field.widget.attrs.update({'class': 'form-check-input'})
+                    field.widget.attrs.update({'class': 'form-check-input', 'role': 'switch'})
                 elif field.widget.input_type == 'select':
                     field.widget.attrs.update({'class': 'form-select'})
                 elif isinstance(field.widget, Textarea):

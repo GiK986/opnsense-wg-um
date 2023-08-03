@@ -4,11 +4,11 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-4">
+    <div class="col-md-10 col-xl-8">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
             <div class="card-header"><h3 class="text-center font-weight-light my-4">Delete OpnSense API client</h3></div>
-            <div class="card-body">
-                <h5>Are you sure you want to delete "{{ api_client }}" ?</h5>
+            <div class="card-body text-center">
+                <h5>Are you sure you want to delete "{{ object }}" ?</h5>
                 <form method="post">
                     {% csrf_token %}
                     <div class="d-flex justify-content-end">
