@@ -41,10 +41,20 @@ class ApiClient:
         return self.endpoint_client.del_client(uuid)
 
     def set_client(self, uuid, peer_client_dict):
+        peer_client_dict['keepalive'] = str(peer_client_dict['keepalive'])
+        peer_client_dict['enabled'] = str(int(peer_client_dict['enabled']))
         peer_client = {
             "client": peer_client_dict
         }
         return self.endpoint_client.set_client(uuid, peer_client)
+
+    def client_set(self):
+        payload = {
+            "general": {
+                "enabled": "1"
+            }
+        }
+        return self.endpoint_client.set(payload)
 
     def get_general(self):
         return self.general_client.get()

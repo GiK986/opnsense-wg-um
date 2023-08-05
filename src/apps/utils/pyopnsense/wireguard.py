@@ -28,6 +28,9 @@ class EndpointClient(client.OPNClient):
         endpoint = self._generate_endpoint(command='getClient', parameters=uuid)
         client_info = self._get(endpoint)
         client_info['client']['tunneladdress'] = list(client_info['client']['tunneladdress'].keys())[0]
+        client_info['client']['uuid'] = uuid
+        client_info['client']['keepalive'] = int(client_info['client']['keepalive'])
+        client_info['client']['enabled'] = bool(int(client_info['client']['enabled']))
         return client_info['client']
 
     def search_client(self):
@@ -38,6 +41,12 @@ class EndpointClient(client.OPNClient):
         endpoint = self._generate_endpoint(command='setClient', parameters=uuid)
         return self._post_json(endpoint, payload=peer_client)
 
+    # https://91.132.60.114/api/wireguard/client/set
+    def set(self, payload):
+        endpoint = self._generate_endpoint(command='set')
+        return self._post_json(endpoint, payload=payload)
+
+    # https://91.132.60.114/api/wireguard/service/reconfigure
     def get_all_reserved_ips(self):
         result = self.search_client()
         reserved_ips = set(map(lambda x: x['tunneladdress'].split('/')[0], result['rows']))

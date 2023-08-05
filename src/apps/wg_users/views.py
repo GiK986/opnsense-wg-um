@@ -17,7 +17,7 @@ from core import settings
 from apps.utils.api_client import ApiClient
 from apps.utils.pywgtools import wg_allowed_ips
 from apps.utils.pywgtools.wgtools import genkey, pubkey
-from .forms import AllowedIpsGroupForm
+from .forms import AllowedIpsGroupForm, WGUserUpdateForm
 from .models import WireguardConfig, AllowedIpsGroup
 from django.contrib import messages
 from apps.utils.decorators import api_client_required
@@ -129,24 +129,33 @@ class WGUsersCreateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRe
         return reverse_lazy("index_wg_users")
 
 
-class WGUsersUpdateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRequiredMixin, views.UpdateView):
+class WGUsersUpdateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRequiredMixin, views.FormView):
     template_name = 'wg_users/update.html'
-    model = WireguardConfig
-    fields = []
-    pk_url_kwarg = "wg_user_uuid"
+    form_class = WGUserUpdateForm
+    success_url = reverse_lazy("index_wg_users")
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        return kwargs
+    def get_initial(self):
+        initial = super().get_initial()
+        initial.update(self.api_client.get_client(self.kwargs["wg_user_uuid"]))
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        wg_user_uuid = self.kwargs["wg_user_uuid"]
+        wg_user = self.api_client.get_client(wg_user_uuid)
         interfaces = self.api_client.get_interfaces()
         allowed_ips_groups = self.request.user.allowedipsgroup_set.all().values("id", "group_name")
+        wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+        wg_user_has_config = False
+        if wireguard_config:
+            wg_user_has_config = True
 
         context.update({
+            "wg_user": wg_user,
             "interfaces": interfaces,
             "allowed_ips_groups": allowed_ips_groups,
+            "wg_user_uuid": wg_user_uuid,
+            "wg_user_has_config": wg_user_has_config,
             "segment": "index_wg_users",
             "page": {
                 "title": "Update WireGuard User",
@@ -159,45 +168,50 @@ class WGUsersUpdateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRe
 
         return context
 
+    def form_valid(self, form):
+        wg_user_uuid = self.kwargs.get("wg_user_uuid")
+        wg_user = self.api_client.get_client(wg_user_uuid)
 
-@api_client_required
-@login_required
-def update(request, wg_user_uuid):
-    api_client = ApiClient(**request.user.default_api_client.to_dict())
-    wg_user = api_client.get_client(wg_user_uuid)
-    wg_user["uuid"] = wg_user_uuid
-    interfaces = api_client.get_interfaces()
-    allowed_ips_groups = request.user.allowedipsgroup_set.all().values("id", "group_name")
-    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
-    wg_user["config"] = False
-    if wireguard_config:
-        wg_user["config"] = True
+        before_update_enabled = wg_user["enabled"]
+        wg_user.update(form.cleaned_data)
+        after_update_enabled = wg_user["enabled"]
+        self.api_client.set_client(wg_user_uuid, wg_user)
 
-    if request.method == "POST":
-        wg_user.update(request.POST.dict())
-        del wg_user["uuid"], wg_user["csrfmiddlewaretoken"], wg_user["config"]
-        api_client.set_client(wg_user_uuid, wg_user)
+        if not before_update_enabled == after_update_enabled:
+            self.api_client.client_set()
+            self.api_client.service_reconfigure()
 
+        wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
         if wireguard_config:
             wireguard_config.name = wg_user["name"]
             wireguard_config.keepalive = wg_user["keepalive"]
             wireguard_config.save()
-        messages.success(request, f'Updated client {wg_user["name"]}')
-        return redirect("index_wg_users")
 
-    context = {
-        "wg_user": wg_user,
-        "interfaces": interfaces,
-        "allowed_ips_groups": allowed_ips_groups,
-        "page": {
-            "title": "Update WireGuard User",
-            "breadcrumbs": [
-                {"name": "Dashboard", "url": reverse_lazy("dashboard")},
-                {"name": "WireGuard Users", "url": reverse_lazy("index_wg_users")},
-            ]
-        }
-    }
-    return render(request, "wg_users/update.html", context)
+        messages.success(self.request, f'Updated client {wg_user["name"]}')
+        return super().form_valid(form)
+
+
+class ShareQrCodeLinkView(views.TemplateView):
+    template_name = "wg_users/share_qrcode_link.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        wg_user_uuid = kwargs["wg_user_uuid"]
+        wg_user = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+        wg_user_name = "Not found"
+        wg_user_config = False
+        if wg_user:
+            wg_user_name = wg_user.name
+            wg_user_config = True
+
+        context.update(
+            {
+                "wg_user_uuid": wg_user_uuid,
+                "wg_user_name": wg_user_name,
+                "wg_user_config": wg_user_config,
+            }
+        )
+        return context
 
 
 @csrf_exempt
@@ -271,7 +285,7 @@ def reconfiguration(request, wg_user_uuid):
     return JsonResponse({"status": "ok"})
 
 
-def download(request, wg_user_uuid):
+def get_wireguard_config(request, wg_user_uuid):
     wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
     if not wireguard_config:
         messages.error(request, "Wireguard config not found")
@@ -281,21 +295,19 @@ def download(request, wg_user_uuid):
         "config": wireguard_config,
     }
     content = render_to_string("wg_users/wireguard-config.conf", context)
+
+    return wireguard_config.name, content
+
+
+def download(request, wg_user_uuid):
+    name, content = get_wireguard_config(request, wg_user_uuid)
     response = HttpResponse(content, content_type="application/octet-stream")
-    response["Content-Disposition"] = f'attachment; filename="{wireguard_config.name}.conf"'
+    response["Content-Disposition"] = f'attachment; filename="{name}.conf"'
     return response
 
 
 def generate_qrcode(request, wg_user_uuid):
-    wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
-    if not wireguard_config:
-        messages.error(request, "Wireguard config not found")
-        return redirect(request.META.get("HTTP_REFERER"))
-
-    context = {
-        "config": wireguard_config,
-    }
-    content = render_to_string("wg_users/wireguard-config.conf", context)
+    name, content = get_wireguard_config(request, wg_user_uuid)
 
     qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
     qr.add_data(content)
@@ -316,23 +328,6 @@ def download_qrcode(request, wg_user_uuid):
     wg_user_name = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first().name
     response["Content-Disposition"] = f'attachment; filename="{wg_user_name}.png"'
     return response
-
-
-def share_qrcode_link(request, wg_user_uuid):
-    wg_user = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
-    wg_user_name = "Not found"
-    wg_user_config = False
-    if wg_user:
-        wg_user_name = wg_user.name
-        wg_user_config = True
-
-    content = {
-        "wg_user_uuid": wg_user_uuid,
-        "wg_user_name": wg_user_name,
-        "wg_user_config": wg_user_config,
-    }
-
-    return render(request, "wg_users/share_qrcode_link.html", content)
 
 
 @csrf_exempt
