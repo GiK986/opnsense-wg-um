@@ -70,6 +70,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # REST API
+    "rest_framework",
+    "apps.api",
+
     # Apps
     "apps.dashboard",
     "apps.accounts",

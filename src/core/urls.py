@@ -23,4 +23,5 @@ urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
     path("opnsense_api_clients/", include("apps.opnsense_api_clients.urls")),
     path("wg_users/", include("apps.wg_users.urls")),
+    path("api/", include("apps.api.urls")),
 ]
