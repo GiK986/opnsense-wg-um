@@ -34,4 +34,3 @@ def generate_qrcode(wg_user_uuid):
     response.write(img_io.getvalue())
 
     return response
-
