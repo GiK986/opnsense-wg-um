@@ -3,7 +3,7 @@
     * Copyright 2013-2022 Start Bootstrap
     * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-sb-admin/blob/master/LICENSE)
     */
-    // 
+//
 // Scripts
 // 
 
@@ -44,15 +44,15 @@ function copyToClipboard(text, targetElement) {
 
     navigator.clipboard.writeText(input.value)
         .then(() => {
-        targetElement.setAttribute('class', 'svg-inline--fa fa-check');
-        // alert("successfully copied");
+            targetElement.setAttribute('class', 'svg-inline--fa fa-check');
+            // alert("successfully copied");
         })
         .catch((err) => {
-        document.execCommand('copy');
-        console.log(err);
+            document.execCommand('copy');
+            console.log(err);
         })
         .finally(() => {
-        document.body.removeChild(input);
+            document.body.removeChild(input);
         });
 }
 
@@ -64,85 +64,99 @@ const close = document.getElementsByClassName("btn-close")[0];
 const modalTitle = document.getElementsByClassName("modal-title")[0]
 
 form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const query = input.value;
-  fetch(`/wg_users/search/${encodeURIComponent(query)}/`)
-    .then((response) => response.json())
-    .then((data) => {
-      resultsList.innerHTML = "";
-      data.forEach((result) => {
-        const li = document.createElement("li");
-        li.className = "list-group-item"
-        li.innerHTML = `<a class="nav-link" href="${result.url}">${result.title}</a>`;
-        resultsList.appendChild(li);
-      });
-      modalTitle.innerText = `Search for "${query}"`
-      modal.style.display = "block";
-    });
+    event.preventDefault();
+    const query = input.value;
+    fetch(`/api/search/${encodeURIComponent(query)}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            resultsList.innerHTML = "";
+            data.forEach((result) => {
+                const li = document.createElement("li");
+                li.className = "list-group-item"
+                li.innerHTML = `<a class="nav-link" href="${result.url}">${result.title}</a>`;
+                resultsList.appendChild(li);
+            });
+            modalTitle.innerText = `Search for "${query}"`
+            modal.style.display = "block";
+        });
 });
 
 close.addEventListener("click", () => {
-  modal.style.display = "none";
+    modal.style.display = "none";
 });
 
 window.addEventListener("click", (event) => {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
 });
 
-function deleteWgUser(uuid, event) {
-    // Send a DELETE request to the /wg_users/<uuid> endpoint
-    fetch(`/wg_users/delete/${uuid}/`, { method: 'DELETE' })
-      .then(response => response.json())
-      .then(data => {
-        // Refresh the page
-        window.location.replace(document.referrer);
-    });
+function deleteWgUser(uuid) {
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(`/api/delete_wg_user/${uuid}/`,
+        {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfmiddlewaretoken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Refresh the page
+            window.location.replace(document.referrer);
+        });
 
 }
 
 function reconfigurationWgUser(uuid) {
-      url = '/wg_users/reconfiguration/' + uuid + '/';
-      const interface_uuid = document.querySelector('#interface').value
-      const allowed_ips_group = document.querySelector('#allowed_ips_group').value
+    const url = '/api/reconfiguration/' + uuid + '/';
+    const interface_uuid = document.querySelector('#interface').value
+    const allowed_ips_group = document.querySelector('#allowed_ips_group').value
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-      fetch(url, { method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({interface_uuid: interface_uuid,
-                                        allowed_ips_group: allowed_ips_group
-                                        }) })
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfmiddlewaretoken},
+        body: JSON.stringify({
+            interface_uuid: interface_uuid,
+            allowed_ips_group: allowed_ips_group
+        })
+    })
         .then((response) => response.json())
         .then((data) => {
-          // Handle the response from the server
-          // ...
-          if (data) {
-            window.location.replace(document.URL);
-          }
+            // Handle the response from the server
+            // ...
+            if (data) {
+                window.location.replace(document.URL);
+            }
 
         });
 
 };
 
 
-
 function calculate_allowed_ips(event) {
     const allowed_ips = document.getElementById('id_allowed_ips').value;
     const disallowed_ips = document.getElementById('id_disallowed_ips').value;
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const button = document.querySelector("button.btn.btn-primary.btn-block");
     const allowed_ips_calculated = document.getElementById('id_allowed_ips_calculated')
     button.disabled = true;
 
     allowed_ips_calculated.value = '';
 
-    fetch('/wg_users/calculate_allowed_ips/', { method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({allowed_ips: allowed_ips, disallowed_ips: disallowed_ips}) })
-      .then(response => response.json())
-      .then(data => {
-        allowed_ips_calculated.value = data.allowed_ips_calculated
-        button.disabled = false;
-    });
+    fetch('/api/calculate_allowed_ips/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfmiddlewaretoken},
+        body: JSON.stringify({allowed_ips: allowed_ips, disallowed_ips: disallowed_ips})
+    })
+        .then(response => response.json())
+        .then(data => {
+            allowed_ips_calculated.value = data.allowed_ips_calculated
+            button.disabled = false;
+        });
 }
 
 function test_connection(event) {
@@ -163,10 +177,10 @@ function test_connection(event) {
     const btn_test_connection = document.querySelector("#btn-test-connection");
     btn_test_connection.innerHTML = 'Test Connection <i class="fa-solid fa-spinner fa-spin"></i>'
 
-    const url = event.currentTarget.baseURI + '/test_connection/';
     const base_url = document.querySelector('#id_base_url').value;
     const api_key = document.querySelector('#id_api_key').value;
     const api_secret = document.querySelector('#id_api_secret').value;
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     const re = new RegExp("^(http|https)://[\\w+\\.-]+/api$", "gmi");
     if (!re.test(base_url)) {
@@ -178,31 +192,32 @@ function test_connection(event) {
         return;
     }
 
-    fetch('/opnsense_api_clients/test_connection', { method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ base_url: base_url, api_key: api_key, api_secret: api_secret }) })
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response from the server
-        btn_test_connection.innerHTML = 'Test Connection';
+    fetch('/api/opnsense_api_clients/test_connection/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfmiddlewaretoken},
+        body: JSON.stringify({base_url: base_url, api_key: api_key, api_secret: api_secret})
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server
+            btn_test_connection.innerHTML = 'Test Connection';
 
-        if (data.status == 'success') {
-            add_api_client.className = "btn btn-outline-success"
-            add_api_client.disabled = false;
+            if (data.status == 'success') {
+                add_api_client.className = "btn btn-outline-success"
+                add_api_client.disabled = false;
 
-            alert.classList.remove("alert-danger");
-            alert.classList.add("alert-success");
-            alert.innerHTML = data.message;
-            card_footer.classList.remove("d-none");
-        }
-        else {
-            add_api_client.className = "btn btn-outline-danger"
-            add_api_client.disabled = true;
+                alert.classList.remove("alert-danger");
+                alert.classList.add("alert-success");
+                alert.innerHTML = data.message;
+                card_footer.classList.remove("d-none");
+            } else {
+                add_api_client.className = "btn btn-outline-danger"
+                add_api_client.disabled = true;
 
-            alert.innerHTML = data.message;
-            card_footer.classList.remove("d-none");
-        }
-    });
+                alert.innerHTML = data.message;
+                card_footer.classList.remove("d-none");
+            }
+        });
 }
 
 function parseIniFile(event) {
@@ -216,45 +231,48 @@ function parseIniFile(event) {
     const file = fileInput.files[0];
     const reader = new FileReader();
 
-    reader.onload = function(e) {
-      const contents = e.target.result;
-      let lines = contents.split('\n');
-      let isAddedKey = false;
-      let isAddedSecret = false;
-      for (var i = 0; i < lines.length; i++) {
-        let parts = lines[i].split('=');
-        if (parts[0] == 'key') {
-          document.getElementById('id_api_key').value = parts[1];
-          isAddedKey = true;
-        } else if (parts[0] == 'secret') {
-          document.getElementById('id_api_secret').value = parts[1];
-          isAddedSecret = true;
+    reader.onload = function (e) {
+        const contents = e.target.result;
+        let lines = contents.split('\n');
+        let isAddedKey = false;
+        let isAddedSecret = false;
+        for (var i = 0; i < lines.length; i++) {
+            let parts = lines[i].split('=');
+            if (parts[0] == 'key') {
+                document.getElementById('id_api_key').value = parts[1];
+                isAddedKey = true;
+            } else if (parts[0] == 'secret') {
+                document.getElementById('id_api_secret').value = parts[1];
+                isAddedSecret = true;
+            }
         }
-      }
 
-      if (isAddedKey && isAddedSecret) {
-        alert.innerHTML = 'The file was successfully parsed. Please click on the "Test Connection" button to verify the connection.';
-        alert.classList.remove("alert-danger");
-        alert.classList.add("alert-success");
-        card_footer.classList.remove("d-none");
-        fileInput.value = '';
-      } else {
-        alert.innerHTML = 'The file is not a valid OPNsense API client configuration file.';
-        card_footer.classList.remove("d-none");
-      }
+        if (isAddedKey && isAddedSecret) {
+            alert.innerHTML = 'The file was successfully parsed. Please click on the "Test Connection" button to verify the connection.';
+            alert.classList.remove("alert-danger");
+            alert.classList.add("alert-success");
+            card_footer.classList.remove("d-none");
+            fileInput.value = '';
+        } else {
+            alert.innerHTML = 'The file is not a valid OPNsense API client configuration file.';
+            card_footer.classList.remove("d-none");
+        }
 
     };
 
-  reader.readAsText(file);
+    reader.readAsText(file);
 }
 
 function sendEmail(event, wg_user_uuid) {
-    const url = '/wg_users/send_email/' + wg_user_uuid + '/';
+    const url = '/api/send_email/' + wg_user_uuid + '/';
     const email = document.querySelector('#email').value
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch(url, { method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({email: email}) })
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfmiddlewaretoken},
+        body: JSON.stringify({email: email})
+    })
         .then(response => response.json())
         .then(data => {
             window.location.replace(document.referrer);
