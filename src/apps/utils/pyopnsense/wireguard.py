@@ -29,7 +29,7 @@ class EndpointClient(client.OPNClient):
         client_info = self._get(endpoint)
         client_info['client']['tunneladdress'] = list(client_info['client']['tunneladdress'].keys())[0]
         client_info['client']['uuid'] = uuid
-        client_info['client']['keepalive'] = int(client_info['client']['keepalive'])
+        client_info['client']['keepalive'] = int(client_info['client']['keepalive'] or 0)
         client_info['client']['enabled'] = bool(int(client_info['client']['enabled']))
         return client_info['client']
 
