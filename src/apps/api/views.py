@@ -4,7 +4,7 @@ from rest_framework import views
 from rest_framework.response import Response
 
 from apps.api import serializers as api_serializers
-from apps.api.services import send_email
+from apps.api.services import send_email, parse_wireguard_config, create_or_update_wireguard_config
 from apps.utils import mixins as utils_mixins
 from apps.utils.api_client import ApiClient
 from apps.utils.pywgtools import wg_allowed_ips
@@ -142,3 +142,43 @@ class SearchAPIView(utils_mixins.APIClientRequiredMixin, views.APIView):
 
         serializer = api_serializers.WGUserSerializer(results, many=True)
         return Response(serializer.data)
+
+
+class UploadFilesAPIView(utils_mixins.APIClientRequiredMixin, api_views.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = api_serializers.FileSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Access the uploaded files using request.FILES
+        files = serializer.validated_data["files"]
+
+        if not files:
+            return Response({'error': 'No files were uploaded.'})
+
+        for file in files:
+            config = {}
+            parse_config = parse_wireguard_config(file.read().decode("utf-8"))
+            client = self.api_client.find_client(parse_config["Address"], parse_config["public_key"])
+
+            if client:
+                config["wg_user_uuid"] = client["uuid"]
+                config["name"] = client["name"]
+                config["address"] = parse_config.get("Address")
+                config["private_key"] = parse_config.get("PrivateKey")
+                config["public_key"] = parse_config.get("public_key")
+                config["server_public_key"] = parse_config.get("PublicKey")
+                config["server_endpoint"] = parse_config.get("Endpoint").split(":")[0]
+                config["server_endpoint_port"] = parse_config.get("Endpoint").split(":")[1]
+                config["server_allowed_ips"] = parse_config.get("AllowedIPs", "")
+                config["persistent_keepalive"] = int(parse_config.get("PersistentKeepalive", "") or 0)
+                config["dns"] = parse_config.get("DNS", "")
+
+                create_or_update_wireguard_config(config)
+                messages.success(request, f'File {file.name} uploaded successfully!')
+            else:
+                messages.error(request, f'No client found for file {file.name}!')
+
+        return Response({'message': 'finished'})

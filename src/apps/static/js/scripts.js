@@ -279,3 +279,32 @@ function sendEmail(event, wg_user_uuid) {
         });
 
 }
+
+function uploadFiles() {
+        const formData = new FormData(document.getElementById('fileUploadForm'));
+        const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const uploadModal = bootstrap.Modal.getOrCreateInstance("#uploadModal")
+
+        // Send the formData to the server using fetch
+        fetch('/api/upload-files/', {
+            method: 'POST',
+            headers: {'X-CSRFToken': csrfmiddlewaretoken},
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            uploadModal.hide();
+            window.location.reload();
+            console.log(data);
+            // Close the modal after successful upload
+        })
+        .catch(error => {
+            alert('An error occurred while uploading files.');
+            console.error(error);
+        });
+    }
