@@ -9,4 +9,5 @@ urlpatterns = [
     path("opnsense_api_clients/test_connection/", views.OPNsenseAPIClientTestConnectionAPIView.as_view(), name="test_connection_api_client"),
     path("reconfiguration/<str:wg_user_uuid>/", views.ReconfigurationWgUserAPIView.as_view(), name="reconfiguration_wg_users"),
     path("delete_wg_user/<str:wg_user_uuid>/", views.DeleteWgUserAPIView.as_view(), name="delete_wg_users"),
+    path("upload-files/", views.UploadFilesAPIView.as_view(), name="upload_files"),
 ]

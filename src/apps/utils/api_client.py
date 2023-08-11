@@ -209,6 +209,15 @@ class ApiClient:
 
         return clients
 
+    def find_client(self, address, public_key):
+        clients = self.get_interface_clients()
+
+        for client in clients:
+            if client['tunneladdress'] == address and client['pubkey'] == public_key:
+                return client
+
+        return None
+
     def service_reconfigure(self):
         self.service_client.reconfigure()
 

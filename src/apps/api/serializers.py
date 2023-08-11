@@ -24,3 +24,7 @@ class SendEmailSerializer(serializers.Serializer):
 class ReconfigurationWgUserSerializer(serializers.Serializer):
     interface_uuid = serializers.CharField()
     allowed_ips_group = serializers.CharField()
+
+
+class FileSerializer(serializers.Serializer):
+    files = serializers.ListField(child=serializers.FileField())
