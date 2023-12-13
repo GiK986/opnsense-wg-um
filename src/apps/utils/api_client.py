@@ -1,7 +1,7 @@
 from apps.utils.pyopnsense.wireguard import EndpointClient, GeneralClient, ServerClient, ServiceClient
 from datetime import datetime, timedelta
 from ipaddress import ip_interface
-from apps.utils.helpers import calculate_total_ips
+from apps.utils.helpers import calculate_total_ips, get_selected_key
 
 
 class ApiClient:
@@ -43,6 +43,7 @@ class ApiClient:
     def set_client(self, uuid, peer_client_dict):
         peer_client_dict['keepalive'] = str(peer_client_dict['keepalive'])
         peer_client_dict['enabled'] = str(int(peer_client_dict['enabled']))
+        peer_client_dict['servers'] = get_selected_key(peer_client_dict['servers'])
         peer_client = {
             "client": peer_client_dict
         }
@@ -177,13 +178,14 @@ class ApiClient:
                 added_clients.append(peerUUID)
 
         if wireguard_instance_info['server']['dns']:
-            wireguard_instance_info['server']['dns'] = list(wireguard_instance_info['server']['dns'].keys())[0]
+            wireguard_instance_info['server']['dns'] = get_selected_key(wireguard_instance_info['server']['dns'])
         else:
             wireguard_instance_info['server']['dns'] = ''
 
         if wireguard_instance_info['server']['tunneladdress']:
-            wireguard_instance_info['server']['tunneladdress'] = \
-                list(wireguard_instance_info['server']['tunneladdress'].keys())[0]
+            wireguard_instance_info['server']['tunneladdress'] = get_selected_key(wireguard_instance_info['server']['tunneladdress'])
+
+        wireguard_instance_info['server']['carp_depend_on'] = get_selected_key(wireguard_instance_info['server']['carp_depend_on'])
 
         wireguard_instance_info['server']['peers'] = ','.join(added_clients)
 
