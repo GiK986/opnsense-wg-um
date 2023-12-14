@@ -11417,6 +11417,11 @@ body {
 }
 
 @media(max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 0!important;
+        padding-right: 0!important;
+    }
+
     .pc-container .pc-content {
         padding:15px;
         padding-left: 10px;
