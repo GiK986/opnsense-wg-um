@@ -2,6 +2,7 @@ from apps.utils.pyopnsense.wireguard import EndpointClient, GeneralClient, Serve
 from datetime import datetime, timedelta
 from ipaddress import ip_interface
 from apps.utils.helpers import calculate_total_ips, get_selected_key
+import pytz
 
 
 class ApiClient:
@@ -20,8 +21,11 @@ class ApiClient:
     def get_all_reserved_ips(self):
         return self.endpoint_client.get_all_reserved_ips()
 
-    def get_status(self):
-        return self.general_client.get_status()['items']
+    # def get_status(self):
+    #     return self.general_client.get_status()['items']
+
+    def get_service_status(self):
+        return [x for x in self.service_client.show()['rows'] if x['type'] == 'peer']
 
     def add_client(self, name, public_key, host_ip):
         payload = {
@@ -65,17 +69,18 @@ class ApiClient:
 
     def get_interface_clients(self):
         all_clients = self.get_all_clients()
-        interfaces = self.get_status()
+        service_status = self.get_client_stats()
+
         interface_clients = []
         for key, value in all_clients.items():
             value['uuid'] = key
             value['interface'] = 'n/a'
             value['interface_name'] = 'n/a'
 
-            for interface in interfaces.values():
-                if key in interface['peers']:
+            for interface in service_status:
+                if key in interface['uuid']:
                     value['interface'] = interface['interface']
-                    value['interface_name'] = interface['name']
+                    value['interface_name'] = interface['interface_name']
 
             interface_clients.append(value)
 
@@ -87,20 +92,25 @@ class ApiClient:
 
     def get_client_stats(self):
         all_clients = self.get_all_clients()
-        clients_tunnel_address = {key: value['tunneladdress'] for key, value in all_clients.items()}
-        interfaces = self.get_status()
+        clients_dict = {value['pubkey']: {'uuid': key} for key, value in all_clients.items()}
+        service_status = self.get_service_status()
+
+        for row in service_status:
+            if row['public-key'] in clients_dict:
+                clients_dict[row['public-key']].update(row)
+
         client_stats = []
 
-        for interface in interfaces.values():
-            for uuid, peer in interface['peers'].items():
-                peer['interface'] = interface['interface']
-                peer['interface_name'] = interface['name']
-                peer['tunneladdress'] = clients_tunnel_address[uuid]
-                peer['lastHandshake'] = datetime.strptime(peer['lastHandshake'], '%Y-%m-%d %H:%M:%S%z') \
-                    if peer['lastHandshake'] != '0000-00-00 00:00:00+00:00' else datetime(1, 1, 1, 0, 0, 0, 0)
-                peer['uuid'] = uuid
-                del peer['publicKey'], peer['enabled']
-                client_stats.append(peer)
+        for item in clients_dict.values():
+            peer = {
+                'interface': item['if'],
+                'interface_name': item['ifname'],
+                'name': item['name'],
+                'tunneladdress': item['allowed-ips'],
+                'lastHandshake': datetime.utcfromtimestamp(item['latest-handshake']).replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Europe/Sofia')) if item['latest-handshake'] != 0 else datetime(1, 1, 1, 0, 0, 0, 0),
+                'uuid': item['uuid']
+            }
+            client_stats.append(peer)
 
         sorted_client_stats = list(sorted(client_stats,
                                           key=lambda x: int(x['tunneladdress'].split('.')[-1].split('/')[0]),

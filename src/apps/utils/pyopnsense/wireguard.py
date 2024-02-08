@@ -128,6 +128,10 @@ class ServiceClient(client.OPNClient):
         endpoint = self._generate_endpoint(command='restart')
         return self._post_json(endpoint, payload={})
 
+    def show(self):
+        endpoint = self._generate_endpoint(command='show')
+        return self._get(endpoint)
+
     def show_config(self):
         endpoint = self._generate_endpoint(command='showconf')
         return self._get(endpoint)
