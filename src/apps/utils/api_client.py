@@ -102,6 +102,8 @@ class ApiClient:
         client_stats = []
 
         for item in clients_dict.values():
+            if 'type' not in item.keys() or item['type'] != 'peer':
+                continue
             peer = {
                 'interface': item['if'],
                 'interface_name': item['ifname'],
