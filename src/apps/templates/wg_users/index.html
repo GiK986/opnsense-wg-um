@@ -25,6 +25,8 @@
                     <th>User Name</th>
                     <th>Tunnel Address</th>
                     <th>Keepalive</th>
+                    <th>Email</th>
+                    <th>Comment</th>
                     <th>Action</th>
                 </tr>
                 </thead>
@@ -34,6 +36,8 @@
                     <th>User Name</th>
                     <th>Tunnel Address</th>
                     <th>Keepalive</th>
+                    <th>Email</th>
+                    <th>Comment</th>
                     <th>Action</th>
                 </tr>
                 </tfoot>
@@ -45,6 +49,8 @@
                                href="{% url 'update_wg_users' client.uuid %}">{{ client.name }}</a></td>
                         <td>{{ client.tunneladdress }}</td>
                         <td>{{ client.keepalive }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.comment }}</td>
                         <td>
                             {% include 'includes/td-client-config-btn.html' %}
                         </td>

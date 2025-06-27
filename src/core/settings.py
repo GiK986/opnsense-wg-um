@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 CORE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR.parent, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -41,7 +41,7 @@ DEBUG = env('DEBUG')
 # Assets Management
 ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')
 
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", default="localhost").split(" ")
 
 CSRF_PORT = env("CSRF_PORT", default="8000")
 CSRF_TRUSTED_ORIGINS = [f"http://{x}:{CSRF_PORT}" for x in ALLOWED_HOSTS]

@@ -71,6 +71,8 @@
                     <th>Name</th>
                     <th>Tunnel address</th>
                     <th>Last Handshake</th>
+                    <th>Email</th>
+                    <th>Comment</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -80,6 +82,8 @@
                     <th>Name</th>
                     <th>Tunnel address</th>
                     <th>Last Handshake</th>
+                    <th>Email</th>
+                    <th>Comment</th>
                     <th>Action</th>
                 </tr>
             </tfoot>
@@ -90,6 +94,8 @@
                     <td><a class="btn btn-link" href="{% url 'update_wg_users' client.uuid %}"> {{ client.name }} </a></td>
                     <td>{{ client.tunneladdress }}</td>
                     <td>{{ client.lastHandshake | date:"d.m.y H:i" }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.comment }}</td>
                     <td>
                         {% include 'includes/td-client-config-btn.html' %}
                     </td>

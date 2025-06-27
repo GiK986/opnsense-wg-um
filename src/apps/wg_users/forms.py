@@ -26,3 +26,11 @@ class WGUserUpdateForm(forms.Form):
     keepalive = forms.IntegerField(
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Keep Alive'})
     )
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+    )
+    comment = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Comment'})
+    )

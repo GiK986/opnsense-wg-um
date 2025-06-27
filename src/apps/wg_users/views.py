@@ -20,13 +20,17 @@ class WGUsersIndexView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientReq
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         interface_clients = self.api_client.get_interface_clients()
-        wg_user_configs = WireguardConfig.objects.all().values("wg_user_uuid")
+        wg_user_configs = WireguardConfig.objects.all().values("wg_user_uuid", "email", "comment")
 
         for client in interface_clients:
             for wg_user_config in wg_user_configs:
                 client["config"] = False
+                client["email"] = None
+                client["comment"] = None
                 if client["uuid"] == str(wg_user_config["wg_user_uuid"]):
                     client["config"] = True
+                    client["email"] = wg_user_config["email"]
+                    client["comment"] = wg_user_config["comment"]
                     break
 
         context.update({
@@ -174,6 +178,8 @@ class WGUsersUpdateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRe
         if wireguard_config:
             wireguard_config.name = wg_user["name"]
             wireguard_config.keepalive = wg_user["keepalive"]
+            wireguard_config.email = wg_user["email"]
+            wireguard_config.comment = wg_user["comment"]
             wireguard_config.save()
 
         messages.success(self.request, f'Updated client {wg_user["name"]}')

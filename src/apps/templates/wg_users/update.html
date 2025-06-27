@@ -39,6 +39,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    {{ form.email }}
+                                    <label for="email">Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                     {{ form.comment }}
+                                    <label for="comment">Comment</label>
+                                </div>
+                            </div>
+
+                        </div>
                         <div class="form-floating">
                             <div class="form-control text-truncate">{{ wg_user.pubkey }} </div>
                             <label for="pubkey">pubkey</label>

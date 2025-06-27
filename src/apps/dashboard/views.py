@@ -14,13 +14,17 @@ class DashboardView(auth_mixins.LoginRequiredMixin, APIClientRequiredMixin, view
         status_count = self.api_client.get_client_stats_count()
         status_percent = self.api_client.get_client_stats_percent()
 
-        wg_user_configs = WireguardConfig.objects.all().values("wg_user_uuid")
+        wg_user_configs = WireguardConfig.objects.all().values("wg_user_uuid", "email", "comment")
 
         for client in clients:
             for wg_user_config in wg_user_configs:
                 client["config"] = False
+                client["email"] = None
+                client["comment"] = None
                 if client["uuid"] == str(wg_user_config["wg_user_uuid"]):
                     client["config"] = True
+                    client["email"] = wg_user_config["email"]
+                    client["comment"] = wg_user_config["comment"]
                     break
 
         context.update({

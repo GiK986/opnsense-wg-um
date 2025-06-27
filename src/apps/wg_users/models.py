@@ -17,6 +17,8 @@ class WireguardConfig(models.Model):
     server_allowed_ips = models.CharField(max_length=1000)
     persistent_keepalive = models.IntegerField()
     dns = models.CharField(max_length=100)
+    email = models.EmailField(max_length=60, blank=True, null=True)
+    comment = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name
