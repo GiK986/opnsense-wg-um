@@ -129,7 +129,20 @@ class WGUsersUpdateView(auth_mixins.LoginRequiredMixin, utils_mixins.APIClientRe
 
     def get_initial(self):
         initial = super().get_initial()
-        initial.update(self.api_client.get_client(self.kwargs["wg_user_uuid"]))
+        wg_user_uuid = self.kwargs.get("wg_user_uuid")
+        initial.update(self.api_client.get_client(wg_user_uuid))
+        wireguard_config = WireguardConfig.objects.filter(wg_user_uuid=wg_user_uuid).first()
+        if wireguard_config:
+            initial.update({
+                "email": wireguard_config.email,
+                "comment": wireguard_config.comment,
+            })
+        else:
+            initial.update({
+                "email": "",
+                "comment": "",
+            })
+
         return initial
 
     def get_context_data(self, **kwargs):
